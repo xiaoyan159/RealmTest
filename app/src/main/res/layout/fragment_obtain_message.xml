@@ -36,7 +36,8 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tv_message_title"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textview.MaterialTextView
@@ -182,8 +183,8 @@
                         android:id="@+id/edt_send_from"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/selector_bg_4_round_corner">
-                    </androidx.appcompat.widget.AppCompatEditText>
+                        android:background="@drawable/selector_bg_4_round_corner"
+                        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck"></androidx.appcompat.widget.AppCompatEditText>
                 </LinearLayout>
 
                 <LinearLayout
@@ -208,8 +209,8 @@
                         android:id="@+id/edt_send_to"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/selector_bg_4_round_corner">
-                    </androidx.appcompat.widget.AppCompatEditText>
+                        android:background="@drawable/selector_bg_4_round_corner"
+                        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck"></androidx.appcompat.widget.AppCompatEditText>
                 </LinearLayout>
 
                 <LinearLayout
