@@ -1,10 +1,10 @@
-package com.navinfo.vivo.db.dao
+package com.navinfo.volvo.db.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.navinfo.vivo.db.dao.entity.Message
+import com.navinfo.volvo.db.dao.entity.Message
 
 @Dao
 interface MessageDao {

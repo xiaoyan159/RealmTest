@@ -1,4 +1,4 @@
-package com.navinfo.vivo
+package com.navinfo.volvo
 
 import org.junit.Test
 

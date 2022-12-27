@@ -1,4 +1,4 @@
-package com.navinfo.vivo.db.dao;
+package com.navinfo.volvo.db.dao;
 
 
 import android.content.Context;
@@ -10,7 +10,9 @@ import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.sqlite.db.SupportSQLiteOpenHelper;
 
-import com.navinfo.vivo.db.dao.entity.Message;
+import com.navinfo.volvo.db.dao.entity.Attachment;
+import com.navinfo.volvo.db.dao.entity.Message;
+import com.navinfo.volvo.db.dao.entity.User;
 import com.tencent.wcdb.database.SQLiteCipherSpec;
 import com.tencent.wcdb.database.SQLiteDatabase;
 
@@ -23,7 +25,7 @@ import com.tencent.wcdb.repair.BackupKit;
 import com.tencent.wcdb.repair.RecoverKit;
 import com.tencent.wcdb.room.db.WCDBDatabase;
 
-@Database(entities = {Message.class}, version = 1, exportSchema = false)
+@Database(entities = {Message.class, Attachment.class, User.class}, version = 1, exportSchema = false)
 public abstract class MapLifeDataBase extends RoomDatabase {
     // marking the instance as volatile to ensure atomic access to the variable
     /**

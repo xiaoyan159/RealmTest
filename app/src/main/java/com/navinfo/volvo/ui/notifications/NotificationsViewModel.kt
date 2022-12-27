@@ -1,4 +1,4 @@
-package com.navinfo.vivo.ui.notifications
+package com.navinfo.volvo.ui.notifications
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
