@@ -7,19 +7,30 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.navinfo.vivo.ui.home.HomeFragment"
+        android:name="com.navinfo.volvo.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action android:id="@+id/home_2_obtain_message"
+            app:destination="@id/navigation_obtain_message">
+
+        </action>
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.navinfo.vivo.ui.dashboard.DashboardFragment"
+        android:name="com.navinfo.volvo.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.navinfo.vivo.ui.notifications.NotificationsFragment"
+        android:name="com.navinfo.volvo.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_obtain_message"
+        android:name="com.navinfo.volvo.ui.message.ObtainMessageFragment"
+        android:label="问候编辑"
+        tools:layout="@layout/fragment_obtain_message" />
 </navigation>
