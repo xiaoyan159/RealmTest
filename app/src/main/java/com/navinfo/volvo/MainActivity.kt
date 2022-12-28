@@ -10,7 +10,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.navinfo.volvo.R
 import com.navinfo.volvo.databinding.ActivityMainBinding
 import permissions.dispatcher.*
 
