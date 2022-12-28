@@ -33,4 +33,13 @@
         android:name="com.navinfo.volvo.ui.message.ObtainMessageFragment"
         android:label="问候编辑"
         tools:layout="@layout/fragment_obtain_message" />
+
+    <fragment
+        android:id="@+id/navigation_camera"
+        android:name="com.navinfo.volvo.ui.camera.CameraFragment"
+        android:label="@string/title_dashboard"
+        tools:layout="@layout/fragment_camera" />
+
+    <action android:id="@+id/nav_2_camera"
+        app:destination="@id/nav_2_camera"></action>
 </navigation>
