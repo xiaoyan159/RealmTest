@@ -14,6 +14,7 @@ import com.navinfo.volvo.R
 import com.navinfo.volvo.databinding.FragmentHomeBinding
 import com.navinfo.volvo.tools.DisplayUtil
 import com.navinfo.volvo.ui.adapter.MessageAdapter
+import com.navinfo.volvo.ui.message.ObtainMessageViewModel
 import com.yanzhenjie.recyclerview.*
 import com.yanzhenjie.recyclerview.SwipeRecyclerView.LoadMoreListener
 
@@ -32,10 +33,21 @@ class HomeFragment : Fragment(), OnItemClickListener, OnItemMenuClickListener {
     ): View {
         val homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
+        val obtainMessageViewModel = ViewModelProvider(requireActivity()).get(ObtainMessageViewModel::class.java)
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+//        val textView: TextView = binding.tvNewMessage
+//        textView.setOnClickListener {
+//            val message = Message(1, "新建标题", "", "", "", 0, "1", "2", mutableListOf())
+//            obtainMessageViewModel.setCurrentMessage(message)
+//            // 跳转到新建Message的Fragment
+//            Navigation.findNavController(it).navigate(R.id.home_2_obtain_message)
+//        }
+//        homeViewModel.text.observe(viewLifecycleOwner) {
+//
+//        }
         val recyclerview: SwipeRecyclerView = binding.homeMessageRecyclerview
         recyclerview.adapter = null //先设置null，否则会报错
         //创建菜单选项

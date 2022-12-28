@@ -10,6 +10,7 @@ import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.sqlite.db.SupportSQLiteOpenHelper;
 
+import com.navinfo.volvo.db.dao.entity.Message;
 import com.navinfo.volvo.db.dao.entity.Attachment;
 import com.navinfo.volvo.db.dao.entity.Message;
 import com.navinfo.volvo.db.dao.entity.User;

@@ -9,8 +9,14 @@ import com.navinfo.volvo.tools.GsonUtil
 @Entity(tableName = "Attachment")
 data class Attachment(
     @PrimaryKey()
-    var id: String
+    var id: String,
+    var pathUrl: String,
+    var attachmentType: AttachmentType
 )
+
+enum class AttachmentType {
+    PIC, AUDIO
+}
 
 class AttachmentConverters() {
     @TypeConverter

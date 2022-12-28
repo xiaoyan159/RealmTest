@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/activity_default_padding"
+    tools:context=".ui.message.ObtainMessageFragment">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/ti_layout_title"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/default_widget_padding"
+                app:counterEnabled="true"
+                app:counterMaxLength="10"
+                app:errorEnabled="true"
+                android:hint="问候信息"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:startIconDrawable="@drawable/ic_baseline_mail_24">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/tv_message_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/label_message_subtitle"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="问候信息"
+                app:layout_constraintTop_toBottomOf="@id/ti_layout_title"></com.google.android.material.textview.MaterialTextView>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/div_message"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="@dimen/default_widget_padding"
+                app:layout_constraintTop_toBottomOf="@id/label_message_subtitle"></com.google.android.material.divider.MaterialDivider>
+
+            <LinearLayout
+                android:id="@+id/layer_message_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/default_widget_padding"
+                app:layout_constraintTop_toBottomOf="@id/div_message">
+
+                <LinearLayout
+                    style="@style/default_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="*"
+                        android:textColor="@color/red"></TextView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="上传图片："></TextView>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.Material3.Button.ElevatedButton"
+                        app:icon="@drawable/ic_baseline_camera_24"
+                        android:text="点击拍照"
+                        android:padding="@dimen/default_widget_padding"></com.google.android.material.button.MaterialButton>
+                    <Space
+                        android:layout_width="@dimen/default_widget_padding"
+                        android:layout_height="wrap_content"></Space>
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.Material3.Button.ElevatedButton"
+                        app:icon="@drawable/ic_baseline_image_search_24"
+                        android:text="相册选择"
+                        android:padding="@dimen/default_widget_padding"></com.google.android.material.button.MaterialButton>
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/default_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="*"
+                        android:textColor="@color/red"></TextView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="上传音频："></TextView>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.Material3.Button.ElevatedButton"
+                        app:icon="@drawable/ic_baseline_fiber_manual_record_24"
+                        android:text="长按录音"
+                        android:padding="@dimen/default_widget_padding"></com.google.android.material.button.MaterialButton>
+                    <Space
+                        android:layout_width="@dimen/default_widget_padding"
+                        android:layout_height="wrap_content"></Space>
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.Material3.Button.ElevatedButton"
+                        app:icon="@drawable/ic_baseline_audio_file_24"
+                        android:text="音频选择"
+                        android:padding="@dimen/default_widget_padding"></com.google.android.material.button.MaterialButton>
+                </LinearLayout>
+            </LinearLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/label_send_info"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="发送信息"
+                app:layout_constraintTop_toBottomOf="@id/layer_message_info"></com.google.android.material.textview.MaterialTextView>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/div_send_info"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="@dimen/default_widget_padding"
+                app:layout_constraintTop_toBottomOf="@id/label_send_info"></com.google.android.material.divider.MaterialDivider>
+
+            <LinearLayout
+                android:id="@+id/layer_send_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/default_widget_padding"
+                app:layout_constraintTop_toBottomOf="@id/div_send_info">
+
+                <LinearLayout
+                    style="@style/default_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="*"
+                        android:textColor="@color/red"></TextView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="我是谁："></TextView>
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edt_send_from"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/selector_bg_4_round_corner"
+                        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck"></androidx.appcompat.widget.AppCompatEditText>
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/default_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="*"
+                        android:textColor="@color/red"></TextView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="发给谁："></TextView>
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edt_send_to"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/selector_bg_4_round_corner"
+                        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck"></androidx.appcompat.widget.AppCompatEditText>
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/default_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="*"
+                        android:textColor="@color/red"></TextView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="发送时间："></TextView>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_send_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.Material3.Button.ElevatedButton"
+                        app:icon="@drawable/ic_baseline_access_time_24"
+                        android:text="现在"
+                        android:padding="@dimen/default_widget_padding"></com.google.android.material.button.MaterialButton>
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="取消"></com.google.android.material.button.MaterialButton>
+
+        <Space
+            android:layout_width="@dimen/default_widget_padding"
+            android:layout_height="wrap_content"></Space>
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="确认提交"></com.google.android.material.button.MaterialButton>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
