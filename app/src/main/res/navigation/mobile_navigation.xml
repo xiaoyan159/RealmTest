@@ -23,23 +23,15 @@
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
+        android:id="@+id/fab_new_message"
+        android:name="com.navinfo.volvo.ui.dashboard.DashboardFragment"
+        android:label="@string/title_dashboard"
+        tools:layout="@layout/fragment_dashboard" />
+
+    <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.navinfo.volvo.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
 
-    <fragment
-        android:id="@+id/navigation_obtain_message"
-        android:name="com.navinfo.volvo.ui.message.ObtainMessageFragment"
-        android:label="问候编辑"
-        tools:layout="@layout/fragment_obtain_message" />
-
-    <fragment
-        android:id="@+id/navigation_camera"
-        android:name="com.navinfo.volvo.ui.camera.CameraFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_camera" />
-
-    <action android:id="@+id/nav_2_camera"
-        app:destination="@id/nav_2_camera"></action>
 </navigation>

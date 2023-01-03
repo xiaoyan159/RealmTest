@@ -7,9 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
+import androidx.navigation.Navigation
+import com.easytools.tools.DateUtils
+import com.easytools.tools.FileUtils
+import com.elvishew.xlog.XLog
 import com.navinfo.volvo.databinding.FragmentCameraBinding
+import com.navinfo.volvo.ui.message.ObtainMessageViewModel
+import com.navinfo.volvo.utils.SystemConstant
 import com.otaliastudios.cameraview.CameraListener
 import com.otaliastudios.cameraview.CameraView
+import com.otaliastudios.cameraview.FileCallback
 import com.otaliastudios.cameraview.PictureResult
 import top.zibin.luban.Luban
 import top.zibin.luban.OnCompressListener
@@ -24,6 +32,9 @@ class CameraFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+//    private val exportFolderPath by lazy {
+//        "${SystemConstant.ROOT_PATH}/exportPic/"
+//    }
 
     private val cameraLifeCycleObserver: CameraLifeCycleObserver by lazy {
         CameraLifeCycleObserver()
@@ -34,7 +45,7 @@ class CameraFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        lifecycle.addObserver(cameraLifeCycleObserver)
+//        lifecycle.addObserver(cameraLifeCycleObserver)
 
         val cameraViewModel =
             ViewModelProvider(this).get(CameraViewModel::class.java)
@@ -47,41 +58,55 @@ class CameraFragment : Fragment() {
         cameraView.addCameraListener(object:CameraListener() { // 添加拍照回调
             override fun onPictureTaken(result: PictureResult) {
                 super.onPictureTaken(result)
-                result.toFile()
-                // 压缩图片文件
-                Luban.with(context)
-                    .load<Any>(photos)
-                    .ignoreBy(100)
-                    .setTargetDir(getPath())
-                    .filter { path ->
-                        !(TextUtils.isEmpty(path) || path.lowercase(Locale.getDefault())
-                            .endsWith(".gif"))
+//                FileUtils.createOrExistsDir(cameraFolderPath)
+                val resultFile = File("${SystemConstant.CameraFolder}/${DateUtils.date2Str(Date(), DateUtils.FORMAT_YMDHMS)}.jpg")
+                result.toFile(resultFile, object: FileCallback {
+                    override fun onFileReady(resultFile: File?) {
+                        // 压缩图片文件
+                        Luban.with(context)
+                            .load<Any>(mutableListOf(resultFile) as List<Any>?)
+                            .ignoreBy(200)
+                            .setTargetDir("${SystemConstant.CameraFolder}")
+                            .filter { path ->
+                                !(TextUtils.isEmpty(path) || path.lowercase(Locale.getDefault())
+                                    .endsWith(".gif"))
+                            }
+                            .setCompressListener(object : OnCompressListener {
+                                override fun onStart() {
+                                    XLog.d("开始压缩图片")
+                                }
+
+                                override fun onSuccess(file: File?) {
+                                    XLog.d("压缩图片成功:${file?.absolutePath}")
+                                    // 删除源文件
+                                    if (!resultFile!!.absolutePath.equals(file!!.absolutePath)) {
+                                        resultFile!!.delete()
+                                    }
+                                    // 跳转回原Fragment，展示拍摄的照片
+                                    ViewModelProvider(requireActivity()).get(ObtainMessageViewModel::class.java).updateMessagePic(file!!.absolutePath)
+                                    // 跳转回原界面
+                                    Navigation.findNavController(root).popBackStack()
+                                }
+
+                                override fun onError(e: Throwable) {
+                                    XLog.d("压缩图片失败:${e.message}")
+                                }
+                            }).launch()
                     }
-                    .setCompressListener(object : OnCompressListener {
-                        override fun onStart() {
-                            // TODO 压缩开始前调用，可以在方法内启动 loading UI
-                        }
-
-                        override fun onSuccess(file: File?) {
-                            // TODO 压缩成功后调用，返回压缩后的图片文件
-                        }
-
-                        override fun onError(e: Throwable) {
-                            // TODO 当压缩过程出现问题时调用
-                        }
-                    }).launch()
+                })
             }
         })
         // 点击拍照
         binding.imgStartCamera.setOnClickListener {
             cameraView.takePicture()
         }
+
         return root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        lifecycle.removeObserver(cameraLifeCycleObserver)
+//        lifecycle.removeObserver(cameraLifeCycleObserver)
     }
 }

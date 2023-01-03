@@ -83,14 +83,21 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10'
     implementation 'com.yanzhenjie.recyclerview:x:1.3.2'
 
-    // 动态权限申请 https://github.com/permissions-dispatcher/PermissionsDispatcher
-    implementation "com.github.permissions-dispatcher:permissionsdispatcher:4.9.2"
-    annotationProcessor "com.github.permissions-dispatcher:permissionsdispatcher-processor:4.9.2"
+    // 权限请求框架：https://github.com/getActivity/XXPermissions
+    implementation 'com.github.getActivity:XXPermissions:16.5'
 
     // 相机库 https://natario1.github.io/CameraView/about/getting-started
     implementation("com.otaliastudios:cameraview:2.7.2")
     // 图片压缩算法 https://github.com/Curzibn/Luban
     implementation 'top.zibin:Luban:1.1.8'
-    // Android工具类库 https://github.com/l123456789jy/Lazy
-    implementation 'com.github.lazylibrary:lazylibrary:1.0.2'
+    // Android工具类库 https://github.com/gycold/EasyAndroid
+    implementation 'io.github.gycold:easyandroid:2.0.7'
+    // 日志工具 https://github.com/elvishew/xLog/blob/master/README_ZH.md
+    implementation 'com.elvishew:xlog:1.10.1'
+    //加载图片的依赖包
+    implementation ("com.github.bumptech.glide:glide:4.11.0") {
+        exclude group: "com.android.support"
+    }
+    // 显示错误提示 https://github.com/nhaarman/supertooltips
+    implementation 'com.nhaarman.supertooltips:library:3.0.0'
 }

@@ -4,8 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import com.navinfo.volvo.db.dao.entity.Attachment
 import com.navinfo.volvo.db.dao.entity.Message
 import com.navinfo.volvo.db.dao.entity.AttachmentType
+import java.util.UUID
 
 class ObtainMessageViewModel: ViewModel() {
     private val msgLiveData: MutableLiveData<Message> by lazy {
@@ -27,21 +29,40 @@ class ObtainMessageViewModel: ViewModel() {
     }
 
     // 更新消息附件中的照片文件
-    fun updateMessagePic(picUrl: String) {
+    fun updateMessagePic(picUrl: String?) {
+        var hasPic = false
+
         for (attachment in this.msgLiveData.value!!.attachment) {
             if (attachment.attachmentType == AttachmentType.PIC) {
-                attachment.pathUrl = picUrl
+                if (picUrl==null||picUrl.isEmpty()) {
+                    this.msgLiveData.value!!.attachment.remove(attachment)
+                } else {
+                    attachment.pathUrl = picUrl
+                }
+                hasPic = true
             }
+        }
+        if (!hasPic&&picUrl!=null) {
+            this.msgLiveData.value!!.attachment.add(Attachment(UUID.randomUUID().toString(), picUrl, AttachmentType.PIC))
         }
         this.msgLiveData.postValue(this.msgLiveData.value)
     }
 
     // 更新消息附件中的录音文件
-    fun updateMessageAudio(audioUrl: String) {
+    fun updateMessageAudio(audioUrl: String?) {
+        var hasAudio = false
         for (attachment in this.msgLiveData.value!!.attachment) {
             if (attachment.attachmentType == AttachmentType.AUDIO) {
-                attachment.pathUrl = audioUrl
+                if (audioUrl==null||audioUrl.isEmpty()) {
+                    this.msgLiveData.value!!.attachment.remove(attachment)
+                } else {
+                    attachment.pathUrl = audioUrl
+                }
+                hasAudio = true
             }
+        }
+        if (!hasAudio&&audioUrl!=null) {
+            this.msgLiveData.value!!.attachment.add(Attachment(UUID.randomUUID().toString(), audioUrl, AttachmentType.AUDIO))
         }
         this.msgLiveData.postValue(this.msgLiveData.value)
     }
