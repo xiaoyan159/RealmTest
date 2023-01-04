@@ -1,5 +1,8 @@
 package com.navinfo.volvo.http
 
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -17,7 +20,7 @@ interface NavinfoVolvoService {
     fun deleteCardByApp(@Body deleteData: MutableMap<String, String>)
     @POST("/img/upload")
     @Multipart
-    fun uploadAttachment(@Part("picture") attachmentFile: File)
+    suspend fun uploadAttachment(@Part attachmentFile: MultipartBody.Part):DefaultResponse<MutableMap<String, String>>
     @POST("/img/download")
-    fun downLoadAttachment(@Body downloadData: MutableMap<String, String>)
+    fun downLoadAttachment(@Body downloadData: MutableMap<String, String>):Call<DefaultResponse<MutableMap<String, String>>>
 }

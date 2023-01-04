@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import com.bumptech.glide.Glide
 import com.easytools.tools.DateUtils
 import com.easytools.tools.ToastUtils
 import com.elvishew.xlog.XLog
@@ -80,13 +81,18 @@ class ObtainMessageFragment: Fragment() {
                     // 展示照片文件或录音文件
                     for (attachment in it.attachment) {
                         if (attachment.attachmentType == AttachmentType.PIC) {
-//                            Glide.with(context!!)
-//                                .asBitmap().fitCenter()
-//                                .load(attachment.pathUrl)
-//                                .into(binding.imgMessageAttachment)
+                            Glide.with(context!!)
+                                .asBitmap().fitCenter()
+                                .load(attachment.pathUrl)
+                                .into(binding.imgMessageAttachment)
                             // 显示名称
                             binding.tvPhotoName.text = attachment.pathUrl.replace("\\", "/").substringAfterLast("/")
                             hasPhoto = true
+
+                            // 如果当前attachment文件是本地文件，开始尝试网络上传
+                            if (!attachment.pathUrl.startsWith("http")) {
+                                obtainMessageViewModel.uploadAttachment(File(attachment.pathUrl))
+                            }
                         }
                         if (attachment.attachmentType == AttachmentType.AUDIO) {
                             binding.tvAudioName.text = attachment.pathUrl.replace("\\", "/").substringAfterLast("/")

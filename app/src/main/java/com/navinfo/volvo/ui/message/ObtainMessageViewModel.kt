@@ -1,13 +1,19 @@
 package com.navinfo.volvo.ui.message
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
+import androidx.lifecycle.*
+import com.easytools.tools.ToastUtils
+import com.elvishew.xlog.XLog
 import com.navinfo.volvo.db.dao.entity.Attachment
-import com.navinfo.volvo.db.dao.entity.Message
 import com.navinfo.volvo.db.dao.entity.AttachmentType
-import java.util.UUID
+import com.navinfo.volvo.db.dao.entity.Message
+import com.navinfo.volvo.http.NavinfoVolvoCall
+import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
+import java.util.*
+
 
 class ObtainMessageViewModel: ViewModel() {
     private val msgLiveData: MutableLiveData<Message> by lazy {
@@ -83,5 +89,26 @@ class ObtainMessageViewModel: ViewModel() {
     fun updateMessageSendTime(sendTime: String) {
         this.msgLiveData.value?.sendDate = sendTime
         this.msgLiveData.postValue(this.msgLiveData.value)
+    }
+
+    fun uploadAttachment(attachmentFile: File) {
+        // 启用协程调用网络请求
+        viewModelScope.launch {
+            try {
+                val requestFile: RequestBody =
+                    RequestBody.create(MediaType.parse("multipart/form-data"), attachmentFile)
+                val body = MultipartBody.Part.createFormData("picture", attachmentFile.getName(), requestFile)
+                val result = NavinfoVolvoCall.getApi().uploadAttachment(body)
+                XLog.d(result.code)
+                if (result.code == 200) { // 请求成功
+                    // 获取上传后的结果
+                } else {
+                    ToastUtils.showToast(result.message)
+                }
+            } catch (e: Exception) {
+                ToastUtils.showToast(e.message)
+                XLog.d(e.message)
+            }
+        }
     }
 }

@@ -26,7 +26,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NavinfoVolvo"
-        tools:targetApi="31">
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".ui.message.MessageActivity"
             android:exported="false"
