@@ -53,5 +53,4 @@
             android:value="" />
         <meta-data android:name="ScopedStorage" android:value="true" />
     </application>
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 </manifest>

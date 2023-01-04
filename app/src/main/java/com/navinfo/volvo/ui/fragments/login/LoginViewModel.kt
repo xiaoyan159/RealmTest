@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.navinfo.volvo.database.AppDatabase
-import com.navinfo.volvo.model.User
+import com.navinfo.volvo.database.entity.User
 import javax.inject.Inject
 
 class LoginViewModel @Inject constructor(private val dataBase: AppDatabase) : ViewModel() {

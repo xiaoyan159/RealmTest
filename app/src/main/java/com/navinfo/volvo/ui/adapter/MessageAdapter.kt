@@ -7,18 +7,18 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.navinfo.volvo.R
-import com.navinfo.volvo.model.Message
+import com.navinfo.volvo.database.entity.GreetingMessage
 
 class MessageAdapter : RecyclerView.Adapter<MessageAdapter.MyViewHolder>() {
 
-    var itemList: MutableList<Message> = mutableListOf()
+    var itemList: MutableList<GreetingMessage> = mutableListOf()
 
-    fun addItem(message: Message) {
+    fun addItem(message: GreetingMessage) {
         itemList.add(message)
         notifyItemInserted(itemList.size - 1)
     }
 
-    fun setItem(messageList: MutableList<Message>){
+    fun setItem(messageList: MutableList<GreetingMessage>){
         itemList = messageList
         notifyDataSetChanged()
     }
@@ -35,8 +35,8 @@ class MessageAdapter : RecyclerView.Adapter<MessageAdapter.MyViewHolder>() {
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val message = itemList[position]
-        holder.toName.text = message.fromId
-        holder.messageText.text = message.message
+        holder.toName.text = message.toWho
+        holder.messageText.text = message.name
         holder.sendTime.text = message.sendDate
     }
 

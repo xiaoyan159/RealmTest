@@ -3,12 +3,12 @@ package com.navinfo.volvo.ui.fragments.message
 import androidx.lifecycle.*
 import com.easytools.tools.ToastUtils
 import com.elvishew.xlog.XLog
-import com.navinfo.volvo.db.dao.entity.Attachment
-import com.navinfo.volvo.db.dao.entity.AttachmentType
-import com.navinfo.volvo.db.dao.entity.Message
+import com.navinfo.volvo.database.entity.Attachment
+import com.navinfo.volvo.database.entity.AttachmentType
+import com.navinfo.volvo.database.entity.GreetingMessage
 import com.navinfo.volvo.http.NavinfoVolvoCall
 import kotlinx.coroutines.launch
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
@@ -16,21 +16,21 @@ import java.util.*
 
 
 class ObtainMessageViewModel: ViewModel() {
-    private val msgLiveData: MutableLiveData<Message> by lazy {
-        MutableLiveData<Message>()
+    private val msgLiveData: MutableLiveData<GreetingMessage> by lazy {
+        MutableLiveData<GreetingMessage>()
     }
 
-    fun setCurrentMessage(msg: Message) {
+    fun setCurrentMessage(msg: GreetingMessage) {
         msgLiveData.postValue(msg)
     }
 
-    fun getMessageLiveData(): MutableLiveData<Message> {
+    fun getMessageLiveData(): MutableLiveData<GreetingMessage> {
         return msgLiveData
     }
 
     // 更新消息标题
     fun updateMessageTitle(title: String) {
-        this.msgLiveData.value?.title = title
+        this.msgLiveData.value?.name = title
         this.msgLiveData.postValue(this.msgLiveData.value)
     }
 
@@ -75,13 +75,13 @@ class ObtainMessageViewModel: ViewModel() {
 
     // 更新发送人
     fun updateMessageSendFrom(sendFrom: String) {
-        this.msgLiveData.value?.fromId = sendFrom
+        this.msgLiveData.value?.who = sendFrom
         this.msgLiveData.postValue(this.msgLiveData.value)
     }
 
     // 更新接收人
     fun updateMessageSendTo(sendTo: String) {
-        this.msgLiveData.value?.toId = sendTo
+        this.msgLiveData.value?.toWho = sendTo
         this.msgLiveData.postValue(this.msgLiveData.value)
     }
 
@@ -96,14 +96,14 @@ class ObtainMessageViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 val requestFile: RequestBody =
-                    RequestBody.create(MediaType.parse("multipart/form-data"), attachmentFile)
+                    RequestBody.create("multipart/form-data".toMediaTypeOrNull(), attachmentFile)
                 val body = MultipartBody.Part.createFormData("picture", attachmentFile.getName(), requestFile)
                 val result = NavinfoVolvoCall.getApi().uploadAttachment(body)
                 XLog.d(result.code)
                 if (result.code == 200) { // 请求成功
                     // 获取上传后的结果
                 } else {
-                    ToastUtils.showToast(result.message)
+                    ToastUtils.showToast(result.msg)
                 }
             } catch (e: Exception) {
                 ToastUtils.showToast(e.message)

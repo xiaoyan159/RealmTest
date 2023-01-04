@@ -13,7 +13,7 @@ import com.easytools.tools.DateUtils
 import com.easytools.tools.FileUtils
 import com.elvishew.xlog.XLog
 import com.navinfo.volvo.databinding.FragmentCameraBinding
-import com.navinfo.volvo.ui.message.ObtainMessageViewModel
+import com.navinfo.volvo.ui.fragments.message.ObtainMessageViewModel
 import com.navinfo.volvo.utils.SystemConstant
 import com.otaliastudios.cameraview.CameraListener
 import com.otaliastudios.cameraview.CameraView

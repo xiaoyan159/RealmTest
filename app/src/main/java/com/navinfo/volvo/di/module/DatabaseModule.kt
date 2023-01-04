@@ -3,7 +3,7 @@ package com.navinfo.volvo.di.module
 import android.content.Context
 import androidx.room.Room
 import com.navinfo.volvo.database.AppDatabase
-import com.navinfo.volvo.database.dao.MessageDao
+import com.navinfo.volvo.database.dao.GreetingMessageDao
 import com.navinfo.volvo.database.dao.UserDao
 import com.tencent.wcdb.database.SQLiteCipherSpec
 import com.tencent.wcdb.room.db.WCDBOpenHelperFactory
@@ -45,7 +45,7 @@ class DatabaseModule {
 
     @Singleton
     @Provides
-    fun provideMessageDao(database: AppDatabase): MessageDao {
+    fun provideMessageDao(database: AppDatabase): GreetingMessageDao {
         return database.getMessageDao()
     }
 

@@ -25,11 +25,10 @@ import com.gredicer.datetimepicker.DateTimePickerFragment
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
-import com.navinfo.volvo.R
 import com.navinfo.volvo.RecorderLifecycleObserver
 import com.navinfo.volvo.databinding.FragmentObtainMessageBinding
-import com.navinfo.volvo.db.dao.entity.AttachmentType
-import com.navinfo.volvo.db.dao.entity.Message
+import com.navinfo.volvo.database.entity.AttachmentType
+import com.navinfo.volvo.database.entity.GreetingMessage
 import com.navinfo.volvo.ui.markRequiredInRed
 import com.navinfo.volvo.utils.EasyMediaFile
 import com.navinfo.volvo.utils.SystemConstant
@@ -65,13 +64,13 @@ class ObtainMessageFragment: Fragment() {
         _binding = FragmentObtainMessageBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        obtainMessageViewModel.setCurrentMessage(Message())
+       obtainMessageViewModel.setCurrentMessage(GreetingMessage())
 
         obtainMessageViewModel?.getMessageLiveData()?.observe(
             viewLifecycleOwner, Observer {
                 // 初始化界面显示内容
-                if(it.title?.isNotEmpty() == true)
-                    binding.tvMessageTitle?.setText(it.title)
+                if(it.name?.isNotEmpty() == true)
+                    binding.tvMessageTitle?.setText(it.name)
                 if (it.sendDate?.isNotEmpty() == true) {
                     binding.btnSendTime.text = it.sendDate
                 }
@@ -131,7 +130,7 @@ class ObtainMessageFragment: Fragment() {
             android.R.layout.simple_dropdown_item_1line, android.R.id.text1, sendToArray)
         binding.edtSendTo.onItemSelectedListener = object: OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                obtainMessageViewModel.getMessageLiveData().value?.toId = sendToArray[p2]
+                obtainMessageViewModel.getMessageLiveData().value?.toWho = sendToArray[p2]
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -287,7 +286,7 @@ class ObtainMessageFragment: Fragment() {
         binding.btnObtainMessageConfirm.setOnClickListener {
             // 检查当前输入数据
             val messageData = obtainMessageViewModel.getMessageLiveData().value
-            if (messageData?.title?.isEmpty() == true) {
+            if (messageData?.name?.isEmpty() == true) {
                 val toolTipRelativeLayout =
                     binding.ttTitle
                 val toolTip = ToolTip()
@@ -328,7 +327,7 @@ class ObtainMessageFragment: Fragment() {
                 toolTipRelativeLayout.showToolTipForView(toolTip, binding.tvUploadPic)
             }
 
-            if (messageData?.fromId?.isEmpty()==true) {
+            if (messageData?.who?.isEmpty()==true) {
                 val toolTipRelativeLayout =
                     binding.ttSendFrom
                 val toolTip = ToolTip()
@@ -338,7 +337,7 @@ class ObtainMessageFragment: Fragment() {
                     .withAnimationType(ToolTip.AnimationType.FROM_MASTER_VIEW)
                 toolTipRelativeLayout.showToolTipForView(toolTip, binding.edtSendFrom)
             }
-            if (messageData?.toId?.isEmpty()==true) {
+            if (messageData?.toWho?.isEmpty()==true) {
                 val toolTipRelativeLayout =
                     binding.ttSendTo
                 val toolTip = ToolTip()

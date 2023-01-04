@@ -136,7 +136,7 @@ dependencies {
     // 日志工具 https://github.com/elvishew/xLog/blob/master/README_ZH.md
     implementation 'com.elvishew:xlog:1.10.1'
     //加载图片的依赖包
-    implementation ("com.github.bumptech.glide:glide:4.11.0") {
+    implementation("com.github.bumptech.glide:glide:4.11.0") {
         exclude group: "com.android.support"
     }
 }

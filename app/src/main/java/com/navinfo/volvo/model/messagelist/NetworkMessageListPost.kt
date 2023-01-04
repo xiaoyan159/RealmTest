@@ -1,6 +1,6 @@
-package com.navinfo.volvo.model.network
+package com.navinfo.volvo.model.messagelist
 
-data class NetworkPostMessage(
+data class NetworkMessageListPost(
     val name: String,//问候名称，非必填项
     val who: String, //我是谁
     val toWho: String, //发送给谁
