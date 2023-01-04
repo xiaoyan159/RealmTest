@@ -17,6 +17,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.easytools.tools.DateUtils
 import com.easytools.tools.ToastUtils
 import com.elvishew.xlog.XLog
@@ -28,10 +29,10 @@ import com.hjq.permissions.XXPermissions
 import com.navinfo.volvo.R
 import com.navinfo.volvo.RecorderLifecycleObserver
 import com.navinfo.volvo.databinding.FragmentObtainMessageBinding
-import com.navinfo.volvo.db.dao.entity.Attachment
-import com.navinfo.volvo.db.dao.entity.AttachmentType
-import com.navinfo.volvo.db.dao.entity.Message
 import com.navinfo.volvo.http.NavinfoVolvoCall
+import com.navinfo.volvo.model.Attachment
+import com.navinfo.volvo.model.AttachmentType
+import com.navinfo.volvo.model.Message
 import com.navinfo.volvo.ui.markRequiredInRed
 import com.navinfo.volvo.utils.EasyMediaFile
 import com.navinfo.volvo.utils.SystemConstant
@@ -75,7 +76,13 @@ class ObtainMessageFragment: Fragment() {
                 if(it.title?.isNotEmpty() == true)
                     binding.tvMessageTitle?.setText(it.title)
                 if (it.sendDate?.isNotEmpty() == true) {
-                    binding.btnSendTime.text = it.sendDate
+                    // 获取当前发送时间，如果早于当前时间，则显示现在
+                    val sendDate = DateUtils.str2Date(it.sendDate, "yyyy-MM-dd HH:mm:ss")
+                    if (sendDate<=Date()) {
+                        binding.btnSendTime.text = "现在"
+                    } else {
+                        binding.btnSendTime.text = it.sendDate
+                    }
                 }
                 var hasPhoto = false
                 var hasAudio = false
@@ -86,6 +93,7 @@ class ObtainMessageFragment: Fragment() {
                             Glide.with(context!!)
                                 .asBitmap().fitCenter()
                                 .load(attachment.pathUrl)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
                                 .into(binding.imgMessageAttachment)
                             // 显示名称
                             hasPhoto = true
@@ -130,14 +138,20 @@ class ObtainMessageFragment: Fragment() {
 
     fun initView() {
         // 设置问候信息提示的红色星号
-        binding.tiLayoutTitle.markRequiredInRed()
-        binding.tvMessageTitle.addTextChangedListener {
-            obtainMessageViewModel.updateMessageTitle(it.toString())
+//        binding.tiLayoutTitle.markRequiredInRed()
+//        binding.tvMessageTitle.addTextChangedListener(afterTextChanged = {
+//            obtainMessageViewModel.updateMessageTitle(it.toString())
+//        })
+
+        binding.tvMessageTitle.setOnFocusChangeListener { view, b ->
+            if (!b) {
+                obtainMessageViewModel.updateMessageTitle(binding.tvMessageTitle.text.toString())
+            }
         }
 
-        binding.edtSendFrom.addTextChangedListener {
+        binding.edtSendFrom.addTextChangedListener (afterTextChanged = {
             obtainMessageViewModel.updateMessageSendFrom(it.toString())
-        }
+        })
 
         binding.imgPhotoDelete.setOnClickListener {
             obtainMessageViewModel.updateMessagePic(null)
@@ -167,9 +181,9 @@ class ObtainMessageFragment: Fragment() {
                 override fun onClickListener(selectTime: String) {
                     val sendDate = DateUtils.str2Date(selectTime, "yyyy-MM-dd HH:mm")
                     if (sendDate <= Date()) {
-                        obtainMessageViewModel.updateMessageSendTime("现在")
+                        obtainMessageViewModel.updateMessageSendTime(DateUtils.date2Str(Date(), "yyyy-MM-dd HH:mm:ss"))
                     } else {
-                        obtainMessageViewModel.updateMessageSendTime(selectTime)
+                        obtainMessageViewModel.updateMessageSendTime(DateUtils.date2Str(sendDate, "yyyy-MM-dd HH:mm:ss"))
                     }
                 }
 

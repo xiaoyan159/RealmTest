@@ -27,7 +27,7 @@
                 app:counterEnabled="true"
                 app:counterMaxLength="10"
                 app:errorEnabled="true"
-                android:hint="请输入问候信息"
+                android:hint="问候信息"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

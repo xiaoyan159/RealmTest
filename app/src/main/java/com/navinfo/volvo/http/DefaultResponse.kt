@@ -2,6 +2,6 @@ package com.navinfo.volvo.http
 
 class DefaultResponse<T> {
     var code: Int = 0
-    var message: String = ""
+    var msg: String = ""
     var data: T? = null
 }

@@ -1,8 +1,6 @@
 package com.navinfo.volvo.ui
 
 import android.content.DialogInterface
-import android.content.Intent
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -11,10 +9,26 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.easytools.tools.FileUtils
+import com.elvishew.xlog.LogConfiguration
+import com.elvishew.xlog.LogLevel
+import com.elvishew.xlog.XLog
+import com.elvishew.xlog.interceptor.BlacklistTagsFilterInterceptor
+import com.elvishew.xlog.printer.AndroidPrinter
+import com.elvishew.xlog.printer.ConsolePrinter
+import com.elvishew.xlog.printer.Printer
+import com.elvishew.xlog.printer.file.FilePrinter
+import com.elvishew.xlog.printer.file.backup.NeverBackupStrategy
+import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hjq.permissions.OnPermissionCallback
+import com.hjq.permissions.Permission
+import com.hjq.permissions.XXPermissions
+import com.navinfo.volvo.BuildConfig
 import com.navinfo.volvo.R
 import com.navinfo.volvo.databinding.ActivityMainBinding
+import com.navinfo.volvo.utils.SystemConstant
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -3,12 +3,13 @@ package com.navinfo.volvo.ui.fragments.message
 import androidx.lifecycle.*
 import com.easytools.tools.ToastUtils
 import com.elvishew.xlog.XLog
-import com.navinfo.volvo.db.dao.entity.Attachment
-import com.navinfo.volvo.db.dao.entity.AttachmentType
-import com.navinfo.volvo.db.dao.entity.Message
 import com.navinfo.volvo.http.NavinfoVolvoCall
+import com.navinfo.volvo.model.Attachment
+import com.navinfo.volvo.model.AttachmentType
+import com.navinfo.volvo.model.Message
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
@@ -122,7 +123,7 @@ class ObtainMessageViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 val requestFile: RequestBody =
-                    RequestBody.create(MediaType.parse("multipart/form-data"), attachmentFile)
+                    RequestBody.create("multipart/form-data".toMediaTypeOrNull(), attachmentFile)
                 val body = MultipartBody.Part.createFormData("picture", attachmentFile.getName(), requestFile)
                 val result = NavinfoVolvoCall.getApi().uploadAttachment(body)
                 XLog.d(result.code)
@@ -133,7 +134,7 @@ class ObtainMessageViewModel: ViewModel() {
                         downloadAttachment(fileKey, attachmentType)
                     }
                 } else {
-                    ToastUtils.showToast(result.message)
+                    ToastUtils.showToast(result.msg)
                 }
             } catch (e: Exception) {
                 ToastUtils.showToast(e.message)
@@ -163,7 +164,7 @@ class ObtainMessageViewModel: ViewModel() {
                         }
                     }
                 } else {
-                    ToastUtils.showToast(result.message)
+                    ToastUtils.showToast(result.msg)
                 }
             } catch (e: Exception) {
                 ToastUtils.showToast(e.message)
@@ -192,7 +193,7 @@ class ObtainMessageViewModel: ViewModel() {
                     message.netId = netId!!
                     // 尝试保存数据到本地
                 } else {
-                    ToastUtils.showToast(result.message)
+                    ToastUtils.showToast(result.msg)
                 }
             } catch (e: Exception) {
                 ToastUtils.showToast(e.message)
@@ -206,6 +207,7 @@ class ObtainMessageViewModel: ViewModel() {
             try {
                 val message = msgLiveData.value
                 val insertData = mapOf(
+                    "id" to message?.netId,
                     "name" to message?.title,
                     "imageUrl" to getImageAttachment(message?.attachment!!)?.pathUrl,
                     "mediaUrl" to getAudioAttachment(message?.attachment!!)?.pathUrl,
@@ -221,7 +223,7 @@ class ObtainMessageViewModel: ViewModel() {
                     message.netId = netId!!
                     // 尝试保存数据到本地
                 } else {
-                    ToastUtils.showToast(result.message)
+                    ToastUtils.showToast(result.msg)
                 }
             } catch (e: Exception) {
                 ToastUtils.showToast(e.message)
