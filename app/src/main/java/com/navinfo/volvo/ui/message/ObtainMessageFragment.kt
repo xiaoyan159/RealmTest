@@ -28,8 +28,10 @@ import com.hjq.permissions.XXPermissions
 import com.navinfo.volvo.R
 import com.navinfo.volvo.RecorderLifecycleObserver
 import com.navinfo.volvo.databinding.FragmentObtainMessageBinding
+import com.navinfo.volvo.db.dao.entity.Attachment
 import com.navinfo.volvo.db.dao.entity.AttachmentType
 import com.navinfo.volvo.db.dao.entity.Message
+import com.navinfo.volvo.http.NavinfoVolvoCall
 import com.navinfo.volvo.ui.markRequiredInRed
 import com.navinfo.volvo.utils.EasyMediaFile
 import com.navinfo.volvo.utils.SystemConstant
@@ -86,22 +88,37 @@ class ObtainMessageFragment: Fragment() {
                                 .load(attachment.pathUrl)
                                 .into(binding.imgMessageAttachment)
                             // 显示名称
-                            binding.tvPhotoName.text = attachment.pathUrl.replace("\\", "/").substringAfterLast("/")
                             hasPhoto = true
 
                             // 如果当前attachment文件是本地文件，开始尝试网络上传
-                            if (!attachment.pathUrl.startsWith("http")) {
-                                obtainMessageViewModel.uploadAttachment(File(attachment.pathUrl))
+                            val str = attachment.pathUrl.replace("\\", "/")
+                            if (!str.startsWith("http")) {
+                                obtainMessageViewModel.uploadAttachment(File(attachment.pathUrl), attachment.attachmentType)
+                                binding.tvPhotoName.text = str.substringAfterLast("/", "picture.jpg")
+                            } else {
+                                binding.tvPhotoName.text = str.substring(str.lastIndexOf("/"), str.indexOf("?"))
                             }
                         }
                         if (attachment.attachmentType == AttachmentType.AUDIO) {
-                            binding.tvAudioName.text = attachment.pathUrl.replace("\\", "/").substringAfterLast("/")
                             hasAudio = true
+
+                            // 如果当前attachment文件是本地文件，开始尝试网络上传
+                            val str = attachment.pathUrl.replace("\\", "/")
+                            if (!str.startsWith("http")) {
+                                obtainMessageViewModel.uploadAttachment(File(attachment.pathUrl), attachment.attachmentType)
+                                binding.tvAudioName.text = str.substringAfterLast("/", "audio.m4a")
+                            } else {
+                                val str = attachment.pathUrl.replace("\\", "/")
+                                binding.tvAudioName.text = str.substring(str.lastIndexOf("/"), str.indexOf("?"))
+                            }
                         }
                     }
+
+                    // 如果当前attachment不为空，可以显示预览按钮
                 }
                 binding.layerPhotoResult.visibility = if (hasPhoto) VISIBLE else GONE
                 binding.layerGetPhoto.visibility = if (hasPhoto) GONE else VISIBLE
+                binding.imgMessageAttachment.visibility = if (hasPhoto) VISIBLE else GONE
                 binding.layerAudioResult.visibility = if (hasAudio) VISIBLE else GONE
                 binding.layerGetAudio.visibility = if (hasAudio) GONE else VISIBLE
             }
@@ -116,6 +133,10 @@ class ObtainMessageFragment: Fragment() {
         binding.tiLayoutTitle.markRequiredInRed()
         binding.tvMessageTitle.addTextChangedListener {
             obtainMessageViewModel.updateMessageTitle(it.toString())
+        }
+
+        binding.edtSendFrom.addTextChangedListener {
+            obtainMessageViewModel.updateMessageSendFrom(it.toString())
         }
 
         binding.imgPhotoDelete.setOnClickListener {
@@ -285,6 +306,7 @@ class ObtainMessageFragment: Fragment() {
         }
 
         binding.btnObtainMessageConfirm.setOnClickListener {
+            var checkResult = true
             // 检查当前输入数据
             val messageData = obtainMessageViewModel.getMessageLiveData().value
             if (messageData?.title?.isEmpty() == true) {
@@ -292,10 +314,11 @@ class ObtainMessageFragment: Fragment() {
                     binding.ttTitle
                 val toolTip = ToolTip()
                     .withText("请输入问候信息")
-                    .withColor(com.navinfo.volvo.R.color.purple_200)
-                    .withShadow()
+                    .withColor(R.color.white)
+                    .withTextColor(R.color.black)
                     .withAnimationType(ToolTip.AnimationType.FROM_MASTER_VIEW)
                 toolTipRelativeLayout.showToolTipForView(toolTip, binding.tiLayoutTitle)
+                checkResult = false
             }
             var hasPic = false
             var hasAudio = false
@@ -312,20 +335,22 @@ class ObtainMessageFragment: Fragment() {
                     binding.ttPic
                 val toolTip = ToolTip()
                     .withText("需要提供照片文件")
-                    .withColor(com.navinfo.volvo.R.color.purple_200)
-                    .withShadow()
+                    .withColor(R.color.white)
+                    .withTextColor(R.color.black)
                     .withAnimationType(ToolTip.AnimationType.FROM_MASTER_VIEW)
                 toolTipRelativeLayout.showToolTipForView(toolTip, binding.tvUploadPic)
+                checkResult = false
             }
             if (!hasAudio) {
                 val toolTipRelativeLayout =
                     binding.ttAudio
                 val toolTip = ToolTip()
                     .withText("需要提供音频文件")
-                    .withColor(com.navinfo.volvo.R.color.purple_200)
-                    .withShadow()
+                    .withColor(R.color.white)
+                    .withTextColor(R.color.black)
                     .withAnimationType(ToolTip.AnimationType.FROM_MASTER_VIEW)
                 toolTipRelativeLayout.showToolTipForView(toolTip, binding.tvUploadPic)
+                checkResult = false
             }
 
             if (messageData?.fromId?.isEmpty()==true) {
@@ -333,20 +358,55 @@ class ObtainMessageFragment: Fragment() {
                     binding.ttSendFrom
                 val toolTip = ToolTip()
                     .withText("请输入您的名称")
-                    .withColor(com.navinfo.volvo.R.color.purple_200)
-                    .withShadow()
+                    .withColor(R.color.white)
+                    .withTextColor(R.color.black)
                     .withAnimationType(ToolTip.AnimationType.FROM_MASTER_VIEW)
                 toolTipRelativeLayout.showToolTipForView(toolTip, binding.edtSendFrom)
+                checkResult = false
             }
             if (messageData?.toId?.isEmpty()==true) {
                 val toolTipRelativeLayout =
                     binding.ttSendTo
                 val toolTip = ToolTip()
                     .withText("请选择要发送的车辆")
-                    .withColor(com.navinfo.volvo.R.color.purple_200)
-                    .withShadow()
+                    .withColor(R.color.white)
+                    .withTextColor(R.color.black)
                     .withAnimationType(ToolTip.AnimationType.FROM_MASTER_VIEW)
                 toolTipRelativeLayout.showToolTipForView(toolTip, binding.edtSendTo)
+                checkResult = false
+            }
+
+            if (checkResult) { // 检查通过
+                // 检查attachment是否为本地数据，如果是本地则弹出对话框尝试上传
+                val localAttachmentList = mutableListOf<Attachment>()
+                for (attachment in messageData?.attachment!!) {
+                    if (!attachment.pathUrl.startsWith("http")) {
+                        localAttachmentList.add(attachment)
+                    }
+                }
+                if (localAttachmentList.isNotEmpty()) {
+                    MaterialAlertDialogBuilder(context!!)
+                        .setTitle("提示")
+                        .setMessage("当前照片及音频内容需首先上传，是否尝试上传?")
+                        .setPositiveButton("确定", DialogInterface.OnClickListener { dialogInterface, i ->
+                            dialogInterface.dismiss()
+                            for (attachment in localAttachmentList) {
+                                obtainMessageViewModel.uploadAttachment(File(attachment.pathUrl), attachment.attachmentType)
+                            }
+                        })
+                        .show()
+                    return@setOnClickListener
+                }
+
+                // 检查发送时间
+
+
+                // 开始网络提交数据
+                if (obtainMessageViewModel.getMessageLiveData().value?.netId!!.isEmpty()) { // 如果网络id为空，则调用更新操作
+                    obtainMessageViewModel.insertCardByApp()
+                } else {
+                    obtainMessageViewModel.updateCardByApp()
+                }
             }
         }
     }

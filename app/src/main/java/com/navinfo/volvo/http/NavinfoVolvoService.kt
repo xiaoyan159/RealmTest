@@ -11,9 +11,9 @@ import java.io.File
 
 interface NavinfoVolvoService {
     @POST("/navi/cardDelivery/insertCardByApp")
-    fun insertCardByApp(@Body insertData: MutableMap<String, String>)
+    suspend fun insertCardByApp(@Body insertData: Map<String, String>):DefaultResponse<String>
     @POST("/navi/cardDelivery/updateCardByApp")
-    fun updateCardByApp(@Body updateData: MutableMap<String, String>)
+    suspend fun updateCardByApp(@Body updateData: Map<String, String>):DefaultResponse<String>
     @POST("/navi/cardDelivery/queryCardListByApp")
     fun queryCardListByApp(@Body queryData: MutableMap<String, String>)
     @POST("/navi/cardDelivery/deleteCardByApp")
@@ -22,5 +22,5 @@ interface NavinfoVolvoService {
     @Multipart
     suspend fun uploadAttachment(@Part attachmentFile: MultipartBody.Part):DefaultResponse<MutableMap<String, String>>
     @POST("/img/download")
-    fun downLoadAttachment(@Body downloadData: MutableMap<String, String>):Call<DefaultResponse<MutableMap<String, String>>>
+    suspend fun downLoadAttachment(@Body downloadData: Map<String, String>):DefaultResponse<String>
 }
