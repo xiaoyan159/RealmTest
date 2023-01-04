@@ -3,40 +3,50 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_login">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.navinfo.volvo.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" >
-        <action android:id="@+id/home_2_obtain_message"
-            app:destination="@id/navigation_obtain_message">
-
-        </action>
+        android:id="@+id/navigation_login"
+        android:name="com.navinfo.volvo.ui.fragments.login.LoginFragment"
+        android:label="login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_login_to_home"
+            app:destination="@id/navigation_message"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left"
+            app:popUpTo="@id/navigation_login"
+            app:popUpToInclusive="true" />
     </fragment>
+    <fragment
+        android:id="@+id/navigation_message"
+        android:name="com.navinfo.volvo.ui.fragments.home.MessageFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home"></fragment>
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.navinfo.volvo.ui.dashboard.DashboardFragment"
+        android:name="com.navinfo.volvo.ui.fragments.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/fab_new_message"
-        android:name="com.navinfo.volvo.ui.dashboard.DashboardFragment"
+        android:name="com.navinfo.volvo.ui.fragments.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.navinfo.volvo.ui.notifications.NotificationsFragment"
+        android:name="com.navinfo.volvo.ui.fragments.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
 
     <fragment
         android:id="@+id/navigation_obtain_message"
-        android:name="com.navinfo.volvo.ui.message.ObtainMessageFragment"
+        android:name="com.navinfo.volvo.ui.fragments.message.ObtainMessageFragment"
         android:label="问候编辑"
         tools:layout="@layout/fragment_obtain_message" />
 </navigation>

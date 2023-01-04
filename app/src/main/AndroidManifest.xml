@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:configChanges="locale"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -14,7 +15,7 @@
         android:theme="@style/Theme.NavinfoVolvo"
         tools:targetApi="31">
         <activity
-            android:name="com.navinfo.volvo.MainActivity"
+            android:name="com.navinfo.volvo.ui.MainActivity"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>
@@ -28,5 +29,5 @@
                 android:value="" />
         </activity>
     </application>
-
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 </manifest>

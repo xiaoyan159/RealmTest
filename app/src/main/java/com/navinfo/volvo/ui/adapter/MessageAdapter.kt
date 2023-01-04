@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.navinfo.volvo.R
-import com.navinfo.volvo.db.dao.entity.Message
+import com.navinfo.volvo.model.Message
 
 class MessageAdapter : RecyclerView.Adapter<MessageAdapter.MyViewHolder>() {
 
