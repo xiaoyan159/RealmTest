@@ -5,4 +5,5 @@
     <dimen name="activity_default_padding">12dp</dimen>
     <dimen name="default_font_size">18sp</dimen>
     <dimen name="default_widget_padding">6dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 </resources>

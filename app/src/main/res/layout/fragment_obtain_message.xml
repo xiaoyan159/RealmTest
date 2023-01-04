@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/activity_default_padding"
-    tools:context=".ui.fragments.message.ObtainMessageFragment">
-
+    tools:context=".ui.message.ObtainMessageFragment">
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:overScrollMode="never"
-        android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
+        app:layout_constraintTop_toTopOf="parent"
+        android:overScrollMode="never"
+        android:scrollbars="none">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -25,10 +24,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/default_widget_padding"
-                android:hint="问候信息"
                 app:counterEnabled="true"
                 app:counterMaxLength="10"
                 app:errorEnabled="true"
+                android:hint="请输入问候信息"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -41,13 +40,19 @@
                     tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.nhaarman.supertooltips.ToolTipRelativeLayout
+                android:id="@+id/tt_title"
+                app:layout_constraintTop_toBottomOf="@id/ti_layout_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/label_message_subtitle"
                 style="@style/TextAppearance.AppCompat.Subhead"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="问候信息"
-                app:layout_constraintTop_toBottomOf="@id/ti_layout_title"></com.google.android.material.textview.MaterialTextView>
+                android:text="问候附件"
+                app:layout_constraintTop_toBottomOf="@id/tt_title"></com.google.android.material.textview.MaterialTextView>
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/div_message"
@@ -78,30 +83,73 @@
                         android:textColor="@color/red"></TextView>
 
                     <TextView
+                        android:id="@+id/tv_upload_pic"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="上传图片："></TextView>
-
-                    <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.Material3.Button.ElevatedButton"
+                    <LinearLayout
+                        android:id="@+id/layer_get_photo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/default_widget_padding"
-                        android:text="点击拍照"
-                        app:icon="@drawable/ic_baseline_camera_24"></com.google.android.material.button.MaterialButton>
-
-                    <Space
-                        android:layout_width="@dimen/default_widget_padding"
-                        android:layout_height="wrap_content"></Space>
-
-                    <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="wrap_content"
+                        android:orientation="horizontal">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_start_camera"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.Material3.Button.ElevatedButton"
+                            app:icon="@drawable/ic_baseline_camera_24"
+                            android:text="点击拍照"
+                            android:padding="@dimen/default_widget_padding"></com.google.android.material.button.MaterialButton>
+                        <Space
+                            android:layout_width="@dimen/default_widget_padding"
+                            android:layout_height="wrap_content"></Space>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_start_photo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.Material3.Button.ElevatedButton"
+                            app:icon="@drawable/ic_baseline_image_search_24"
+                            android:text="相册选择"
+                            android:padding="@dimen/default_widget_padding"></com.google.android.material.button.MaterialButton>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/layer_photo_result"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/default_widget_padding"
-                        android:text="相册选择"
-                        app:icon="@drawable/ic_baseline_image_search_24"></com.google.android.material.button.MaterialButton>
+                        android:gravity="center"
+                        android:visibility="gone"
+                        android:orientation="horizontal">
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_photo_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""></com.google.android.material.textview.MaterialTextView>
+                        <Space
+                            android:layout_width="@dimen/default_widget_padding"
+                            android:layout_height="wrap_content"></Space>
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/img_photo_delete"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:src="@drawable/ic_baseline_delete_24"></com.google.android.material.imageview.ShapeableImageView>
+                    </LinearLayout>
                 </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/img_message_attachment"
+                    android:layout_width="160dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:scaleType="fitCenter">
+                </androidx.appcompat.widget.AppCompatImageView>
+
+                <com.nhaarman.supertooltips.ToolTipRelativeLayout
+                    android:id="@+id/tt_pic"
+                    app:layout_constraintTop_toBottomOf="@id/ti_layout_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
                 <LinearLayout
                     style="@style/default_line"
@@ -120,27 +168,69 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="上传音频："></TextView>
-
-                    <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.Material3.Button.ElevatedButton"
+                    <LinearLayout
+                        android:id="@+id/layer_get_audio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/default_widget_padding"
-                        android:text="长按录音"
-                        app:icon="@drawable/ic_baseline_fiber_manual_record_24"></com.google.android.material.button.MaterialButton>
+                        android:gravity="center"
+                        android:orientation="horizontal">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_start_record"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.Material3.Button.ElevatedButton"
+                            app:icon="@drawable/ic_baseline_fiber_manual_record_24"
+                            android:text="录制音频"
+                            android:padding="@dimen/default_widget_padding"></com.google.android.material.button.MaterialButton>
+                        <Space
+                            android:layout_width="@dimen/default_widget_padding"
+                            android:layout_height="wrap_content"></Space>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_select_sound"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.Material3.Button.ElevatedButton"
+                            app:icon="@drawable/ic_baseline_audio_file_24"
+                            android:text="音频选择"
+                            android:padding="@dimen/default_widget_padding"></com.google.android.material.button.MaterialButton>
+                    </LinearLayout>
 
-                    <Space
-                        android:layout_width="@dimen/default_widget_padding"
-                        android:layout_height="wrap_content"></Space>
-
-                    <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.Material3.Button.ElevatedButton"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:id="@+id/layer_audio_result"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/default_widget_padding"
-                        android:text="音频选择"
-                        app:icon="@drawable/ic_baseline_audio_file_24"></com.google.android.material.button.MaterialButton>
+                        android:gravity="center"
+                        android:visibility="gone"
+                        android:orientation="horizontal">
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_audio_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""></com.google.android.material.textview.MaterialTextView>
+                        <Space
+                            android:layout_width="@dimen/default_widget_padding"
+                            android:layout_height="wrap_content"></Space>
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/img_audio_delete"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:src="@drawable/ic_baseline_delete_24"></com.google.android.material.imageview.ShapeableImageView>
+                    </LinearLayout>
                 </LinearLayout>
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/img_sound_play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_volume_up_24"
+                    android:visibility="gone"
+                    android:layout_gravity="center"></com.google.android.material.imageview.ShapeableImageView>
+                <com.nhaarman.supertooltips.ToolTipRelativeLayout
+                    android:id="@+id/tt_audio"
+                    app:layout_constraintTop_toBottomOf="@id/ti_layout_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <com.google.android.material.textview.MaterialTextView
@@ -162,12 +252,8 @@
                 android:id="@+id/layer_send_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:background="@drawable/shape_radius5_white"
-                android:divider="@drawable/shape_divider_linear"
                 android:orientation="vertical"
                 android:padding="@dimen/default_widget_padding"
-                android:showDividers="middle"
                 app:layout_constraintTop_toBottomOf="@id/div_send_info">
 
                 <LinearLayout
@@ -192,21 +278,44 @@
                         android:id="@+id/edt_send_from"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/selector_bg_4_round_corner"
-                        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck"></androidx.appcompat.widget.AppCompatEditText>
+                        android:background="@drawable/selector_bg_4_round_corner"></androidx.appcompat.widget.AppCompatEditText>
                 </LinearLayout>
 
+                <com.nhaarman.supertooltips.ToolTipRelativeLayout
+                    android:id="@+id/tt_send_from"
+                    app:layout_constraintTop_toBottomOf="@id/ti_layout_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-                <TextView
-                    android:id="@+id/edt_send_to"
+                <LinearLayout
+                    style="@style/default_line"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_baseline_star_8"
-                    android:drawableEnd="@drawable/ic_baseline_navigate_next_24"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:text="发给谁：" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="*"
+                        android:textColor="@color/red"></TextView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="发给谁："></TextView>
+
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/edt_send_to"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"></androidx.appcompat.widget.AppCompatSpinner>
+                </LinearLayout>
+
+                <com.nhaarman.supertooltips.ToolTipRelativeLayout
+                    android:id="@+id/tt_send_to"
+                    app:layout_constraintTop_toBottomOf="@id/ti_layout_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
                 <LinearLayout
                     style="@style/default_line"
@@ -228,19 +337,22 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_send_time"
-                        style="@style/Widget.Material3.Button.ElevatedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/default_widget_padding"
+                        style="@style/Widget.Material3.Button.ElevatedButton"
+                        app:icon="@drawable/ic_baseline_access_time_24"
                         android:text="现在"
-                        app:icon="@drawable/ic_baseline_access_time_24"></com.google.android.material.button.MaterialButton>
+                        android:padding="@dimen/default_widget_padding"></com.google.android.material.button.MaterialButton>
                 </LinearLayout>
-
+                <com.nhaarman.supertooltips.ToolTipRelativeLayout
+                    android:id="@+id/tt_send_time"
+                    app:layout_constraintTop_toBottomOf="@id/ti_layout_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -248,6 +360,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_obtain_message_back"
             style="@style/Widget.Material3.Button.ElevatedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -259,6 +372,7 @@
             android:layout_height="wrap_content"></Space>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_obtain_message_confirm"
             style="@style/Widget.Material3.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

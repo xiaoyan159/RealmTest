@@ -1,9 +1,19 @@
 package com.navinfo.volvo.ui.fragments.message
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.navinfo.volvo.model.Message
-import com.navinfo.volvo.model.AttachmentType
+import androidx.lifecycle.*
+import com.easytools.tools.ToastUtils
+import com.elvishew.xlog.XLog
+import com.navinfo.volvo.db.dao.entity.Attachment
+import com.navinfo.volvo.db.dao.entity.AttachmentType
+import com.navinfo.volvo.db.dao.entity.Message
+import com.navinfo.volvo.http.NavinfoVolvoCall
+import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
+import java.util.*
+
 
 class ObtainMessageViewModel: ViewModel() {
     private val msgLiveData: MutableLiveData<Message> by lazy {
@@ -25,21 +35,40 @@ class ObtainMessageViewModel: ViewModel() {
     }
 
     // 更新消息附件中的照片文件
-    fun updateMessagePic(picUrl: String) {
+    fun updateMessagePic(picUrl: String?) {
+        var hasPic = false
+
         for (attachment in this.msgLiveData.value!!.attachment) {
             if (attachment.attachmentType == AttachmentType.PIC) {
-                attachment.pathUrl = picUrl
+                if (picUrl==null||picUrl.isEmpty()) {
+                    this.msgLiveData.value!!.attachment.remove(attachment)
+                } else {
+                    attachment.pathUrl = picUrl
+                }
+                hasPic = true
             }
+        }
+        if (!hasPic&&picUrl!=null) {
+            this.msgLiveData.value!!.attachment.add(Attachment(UUID.randomUUID().toString(), picUrl, AttachmentType.PIC))
         }
         this.msgLiveData.postValue(this.msgLiveData.value)
     }
 
     // 更新消息附件中的录音文件
-    fun updateMessageAudio(audioUrl: String) {
+    fun updateMessageAudio(audioUrl: String?) {
+        var hasAudio = false
         for (attachment in this.msgLiveData.value!!.attachment) {
             if (attachment.attachmentType == AttachmentType.AUDIO) {
-                attachment.pathUrl = audioUrl
+                if (audioUrl==null||audioUrl.isEmpty()) {
+                    this.msgLiveData.value!!.attachment.remove(attachment)
+                } else {
+                    attachment.pathUrl = audioUrl
+                }
+                hasAudio = true
             }
+        }
+        if (!hasAudio&&audioUrl!=null) {
+            this.msgLiveData.value!!.attachment.add(Attachment(UUID.randomUUID().toString(), audioUrl, AttachmentType.AUDIO))
         }
         this.msgLiveData.postValue(this.msgLiveData.value)
     }
@@ -60,5 +89,26 @@ class ObtainMessageViewModel: ViewModel() {
     fun updateMessageSendTime(sendTime: String) {
         this.msgLiveData.value?.sendDate = sendTime
         this.msgLiveData.postValue(this.msgLiveData.value)
+    }
+
+    fun uploadAttachment(attachmentFile: File) {
+        // 启用协程调用网络请求
+        viewModelScope.launch {
+            try {
+                val requestFile: RequestBody =
+                    RequestBody.create(MediaType.parse("multipart/form-data"), attachmentFile)
+                val body = MultipartBody.Part.createFormData("picture", attachmentFile.getName(), requestFile)
+                val result = NavinfoVolvoCall.getApi().uploadAttachment(body)
+                XLog.d(result.code)
+                if (result.code == 200) { // 请求成功
+                    // 获取上传后的结果
+                } else {
+                    ToastUtils.showToast(result.message)
+                }
+            } catch (e: Exception) {
+                ToastUtils.showToast(e.message)
+                XLog.d(e.message)
+            }
+        }
     }
 }
