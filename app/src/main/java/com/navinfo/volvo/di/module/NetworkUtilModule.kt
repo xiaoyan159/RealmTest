@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.google.gson.Gson
 import com.navinfo.volvo.Constant
-import com.navinfo.volvo.repository.service.NetworkService
+import com.navinfo.volvo.repository.network.NetworkService
 import com.navinfo.volvo.tools.GsonUtil
 import dagger.Lazy
 import dagger.Module
@@ -15,7 +15,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 
@@ -101,4 +100,5 @@ class NetworkUtilModule {
     fun provideNetworkService(retrofit: Retrofit): NetworkService {
         return retrofit.create(NetworkService::class.java)
     }
+
 }

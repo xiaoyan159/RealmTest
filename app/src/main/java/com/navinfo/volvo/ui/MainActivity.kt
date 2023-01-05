@@ -1,7 +1,6 @@
 package com.navinfo.volvo.ui
 
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -85,13 +84,13 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_message, R.id.navigation_dashboard, R.id.navigation_notifications,
+                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications,
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
-            if (destination.id == R.id.navigation_message
+            if (destination.id == R.id.navigation_home
                 || destination.id == R.id.navigation_dashboard
                 || destination.id == R.id.navigation_notifications
                 || destination.id == R.id.navigation_obtain_message

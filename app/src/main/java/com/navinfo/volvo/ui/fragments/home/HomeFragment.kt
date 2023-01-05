@@ -4,50 +4,44 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.navinfo.volvo.R
 import com.navinfo.volvo.databinding.FragmentHomeBinding
 import com.navinfo.volvo.tools.DisplayUtil
 import com.navinfo.volvo.ui.BaseFragment
-import com.navinfo.volvo.ui.adapter.MessageAdapter
-import com.navinfo.volvo.ui.fragments.message.ObtainMessageViewModel
 import com.yanzhenjie.recyclerview.*
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MessageFragment : BaseFragment(), OnItemClickListener, OnItemMenuClickListener {
+class HomeFragment : BaseFragment(), OnItemClickListener, OnItemMenuClickListener {
 
-    private var _binding: FragmentHomeBinding? = null
+    private val viewModel by viewModels<HomeViewModel> { viewModelFactoryProvider }
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
-
-    private val viewModel by viewModels<MessageViewModel> { viewModelFactoryProvider }
+    private lateinit var messageAdapter: HomeAdapter
+    private lateinit var mDataBinding: FragmentHomeBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-//        val homeViewModel =
-//            ViewModelProvider(this)[MessageViewModel::class.java]
-//        val obtainMessageViewModel =
-//            ViewModelProvider(requireActivity()).get(ObtainMessageViewModel::class.java)
-
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
+        mDataBinding.lifecycleOwner = this
         initView()
-        return root
+        return mDataBinding.root
     }
 
 
     private fun initView() {
-        val recyclerview: SwipeRecyclerView = binding.homeMessageRecyclerview
+        mDataBinding.homeViewModel = viewModel
+        messageAdapter = HomeAdapter(this)
+        val recyclerview: SwipeRecyclerView = mDataBinding.homeRecyclerview
         recyclerview.adapter = null //先设置null，否则会报错
         //创建菜单选项
         //注意：使用滑动菜单不能开启滑动删除，否则只有滑动删除没有滑动菜单
@@ -71,34 +65,37 @@ class MessageFragment : BaseFragment(), OnItemClickListener, OnItemMenuClickList
                 rightMenu.addMenuItem(shareItem)
             }
         val layoutManager = LinearLayoutManager(context)
-        val adapter = MessageAdapter()
+
         recyclerview.layoutManager = layoutManager
         recyclerview.addItemDecoration(DividerItemDecoration(context, layoutManager.orientation))
         recyclerview.setSwipeMenuCreator(mSwipeMenuCreator)
         recyclerview.setOnItemClickListener(this)
-        recyclerview.useDefaultLoadMore()
-        recyclerview.setLoadMoreListener {
-
+//        recyclerview.useDefaultLoadMore()
+//        recyclerview.setLoadMoreListener {
+//
+//        }
+        lifecycleScope.launch {
+            viewModel.messageList.collectLatest {
+                messageAdapter.submitData(it)
+            }
         }
-        recyclerview.adapter = adapter
-//        homeViewModel.getMessageList().observe(viewLifecycleOwner, Observer { contacts ->
-//            adapter.setItem(contacts)
-//        })
+//        messageAdapter.withLoadStateFooter(
+//            footer = RecLoadStateAdapter { messageAdapter.retry() }
+//        )
+
+//        messageAdapter.withLoadStateHeader()
+        recyclerview.adapter = messageAdapter
+
     }
 
     override fun onStart() {
         super.onStart()
-        getMessageList()
-    }
-
-    private fun getMessageList() {
-        viewModel.getMessageList()
+        viewModel.getNetMessageList()
     }
 
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
     }
 
     override fun onItemClick(view: View?, adapterPosition: Int) {

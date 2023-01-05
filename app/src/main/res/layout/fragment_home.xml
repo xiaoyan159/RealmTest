@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.yanzhenjie.recyclerview.SwipeRecyclerView
-    android:id="@+id/home_message_recyclerview"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.fragments.home.MessageFragment">
-</com.yanzhenjie.recyclerview.SwipeRecyclerView>
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="HomeViewModel"
+            type="com.navinfo.volvo.ui.fragments.home.HomeViewModel" />
+    </data>
+
+    <com.yanzhenjie.recyclerview.SwipeRecyclerView
+        android:id="@+id/home_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.fragments.home.HomeFragment" />
+</layout>

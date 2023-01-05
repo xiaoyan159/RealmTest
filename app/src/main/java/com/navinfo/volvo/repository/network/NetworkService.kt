@@ -1,4 +1,4 @@
-package com.navinfo.volvo.repository.service
+package com.navinfo.volvo.repository.network
 
 import com.navinfo.volvo.http.DefaultResponse
 import com.navinfo.volvo.model.messagelist.NetworkMessageListResponse

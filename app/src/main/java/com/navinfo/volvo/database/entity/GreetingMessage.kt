@@ -1,8 +1,10 @@
 package com.navinfo.volvo.database.entity
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import kotlinx.android.parcel.Parcelize
 import org.jetbrains.annotations.NotNull
 
 @Entity(tableName = "GreetingMessage")
@@ -40,5 +42,4 @@ data class GreetingMessage @JvmOverloads constructor(
      * 附件列表
      */
     var attachment: MutableList<Attachment> = mutableListOf()
-) {
-}
+)
