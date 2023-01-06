@@ -20,6 +20,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.easytools.tools.DateUtils
@@ -509,9 +510,9 @@ class ObtainMessageFragment: Fragment() {
 
                 // 开始网络提交数据
                 if (obtainMessageViewModel.getMessageLiveData().value?.id==0L) { // 如果网络id为空，则调用更新操作
-                    obtainMessageViewModel.insertCardByApp()
+                    obtainMessageViewModel.insertCardByApp(confirmCallback)
                 } else {
-                    obtainMessageViewModel.updateCardByApp()
+                    obtainMessageViewModel.updateCardByApp(confirmCallback)
                 }
             }
         }
@@ -529,6 +530,12 @@ class ObtainMessageFragment: Fragment() {
                 .showIndex(true) // 是否显示图片索引，默认为true
                 .watch(0) // 开启浏览
 
+        }
+    }
+
+    val confirmCallback = object: ObtainMessageViewModel.MyConfirmCallback {
+        override fun onSucess() {
+            findNavController().navigate(R.id.navi)
         }
     }
 

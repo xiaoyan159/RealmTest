@@ -1,5 +1,6 @@
 package com.navinfo.volvo.ui.fragments.message
 
+import android.security.ConfirmationCallback
 import androidx.lifecycle.*
 import com.easytools.tools.FileIOUtils
 import com.easytools.tools.FileUtils
@@ -219,7 +220,7 @@ class ObtainMessageViewModel: ViewModel() {
         }
     }
 
-    fun insertCardByApp() {
+    fun insertCardByApp(confirmCallback: MyConfirmCallback) {
         viewModelScope.launch {
             try {
                 // TODO 首先保存数据到本地
@@ -240,7 +241,7 @@ class ObtainMessageViewModel: ViewModel() {
                     message?.id = netId!!.toLong()
                     ToastUtils.showToast("保存成功")
                     // TODO 尝试更新本地数据
-
+                    confirmCallback.onSucess()
                 } else {
                     ToastUtils.showToast(result.msg)
                 }
@@ -251,7 +252,7 @@ class ObtainMessageViewModel: ViewModel() {
         }
     }
 
-    fun updateCardByApp() {
+    fun updateCardByApp(confirmCallback: MyConfirmCallback) {
         viewModelScope.launch {
             try {
                 val message = msgLiveData.value
@@ -270,6 +271,7 @@ class ObtainMessageViewModel: ViewModel() {
                     // 数据更新成功
                     ToastUtils.showToast("更新成功")
                     // 尝试保存数据到本地
+                    confirmCallback.onSucess()
                 } else {
                     ToastUtils.showToast(result.msg)
                 }
@@ -298,5 +300,9 @@ class ObtainMessageViewModel: ViewModel() {
         } else {
             return File(url)
         }
+    }
+
+    interface MyConfirmCallback {
+        fun onSucess()
     }
 }
