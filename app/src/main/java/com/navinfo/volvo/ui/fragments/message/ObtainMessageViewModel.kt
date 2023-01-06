@@ -1,6 +1,7 @@
 package com.navinfo.volvo.ui.fragments.message
 
 import androidx.lifecycle.*
+import com.easytools.tools.FileIOUtils
 import com.easytools.tools.FileUtils
 import com.easytools.tools.ToastUtils
 import com.elvishew.xlog.XLog
@@ -19,6 +20,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.io.FileInputStream
 import java.util.*
 
 
@@ -140,13 +142,15 @@ class ObtainMessageViewModel: ViewModel() {
                         if (destFile.exists()) {
                             FileUtils.deleteFile(destFile)
                         }
-                        FileUtils.renameFile(attachmentFile.absolutePath, destFile.absolutePath)
+                        val copyResult = FileIOUtils.writeFileFromIS(destFile, FileInputStream(attachmentFile))
+                        XLog.e("拷贝结果："+copyResult)
                     } else {
                         val destFile = File(SystemConstant.SoundFolder, newFileName)
                         if (destFile.exists()) {
                             FileUtils.deleteFile(destFile)
                         }
-                        FileUtils.renameFile(attachmentFile.absolutePath, destFile.absolutePath)
+                        val copyResult = FileIOUtils.writeFileFromIS(destFile, FileInputStream(attachmentFile))
+                        XLog.e("拷贝结果："+copyResult)
                     }
                     if (fileKey!=null) {
                         downloadAttachment(fileKey, attachmentType)
@@ -234,6 +238,7 @@ class ObtainMessageViewModel: ViewModel() {
                     // 获取上传后的结果
                     val netId = result.data
                     message?.id = netId!!.toLong()
+                    ToastUtils.showToast("保存成功")
                     // TODO 尝试更新本地数据
 
                 } else {
@@ -262,9 +267,8 @@ class ObtainMessageViewModel: ViewModel() {
                 val result = NavinfoVolvoCall.getApi().updateCardByApp(updateData as Map<String, String>)
                 XLog.d("updateCardByApp:${result.code}")
                 if (result.code == 200) { // 请求成功
-                    // 获取上传后的结果
-                    val netId = result.data
-                    message?.id = netId!!.toLong()
+                    // 数据更新成功
+                    ToastUtils.showToast("更新成功")
                     // 尝试保存数据到本地
                 } else {
                     ToastUtils.showToast(result.msg)
@@ -280,15 +284,19 @@ class ObtainMessageViewModel: ViewModel() {
      * 根据网络地址获取本地的缓存文件路径
      * */
     fun getLocalFileFromNetUrl(url: String, attachmentType: AttachmentType):File {
-        val folder = when(attachmentType) {
-            AttachmentType.PIC-> SystemConstant.CameraFolder
-            else -> SystemConstant.SoundFolder
-        }
-        var name = if (url.contains("?")) {
-            url.substring(url.lastIndexOf("/")+1, url.indexOf("?"))
+        if (url.startsWith("http")) {
+            val folder = when(attachmentType) {
+                AttachmentType.PIC-> SystemConstant.CameraFolder
+                else -> SystemConstant.SoundFolder
+            }
+            var name = if (url.contains("?")) {
+                url.substring(url.lastIndexOf("/")+1, url.indexOf("?"))
+            } else {
+                url.substringAfterLast("/")
+            }
+            return File(folder, name)
         } else {
-            url.substringAfterLast("/")
+            return File(url)
         }
-        return File(folder, name)
     }
 }

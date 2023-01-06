@@ -122,6 +122,7 @@
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tv_photo_name"
                             android:textColor="@android:color/holo_blue_dark"
+                            android:padding="@dimen/default_widget_padding"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"></com.google.android.material.textview.MaterialTextView>
@@ -208,6 +209,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:textColor="@android:color/holo_blue_dark"
+                            android:padding="@dimen/default_widget_padding"
                             android:layout_weight="1"
                             android:text=""></com.google.android.material.textview.MaterialTextView>
                         <Space

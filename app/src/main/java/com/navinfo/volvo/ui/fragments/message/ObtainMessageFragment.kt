@@ -2,6 +2,7 @@ package com.navinfo.volvo.ui.fragments.message
 
 import android.content.DialogInterface
 import android.graphics.Paint
+import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -21,9 +22,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.crazylegend.audiopicker.pickers.SingleAudioPicker
 import com.easytools.tools.DateUtils
 import com.easytools.tools.DeviceUtils
 import com.easytools.tools.DisplayUtils
+import com.easytools.tools.FileIOUtils
 import com.easytools.tools.FileUtils
 import com.easytools.tools.ResourceUtils
 import com.easytools.tools.ToastUtils
@@ -45,11 +48,14 @@ import com.navinfo.volvo.util.PhotoLoader
 import com.navinfo.volvo.utils.EasyMediaFile
 import com.navinfo.volvo.utils.SystemConstant
 import com.nhaarman.supertooltips.ToolTip
+import com.robertlevonyan.components.picker.*
 import indi.liyi.viewer.Utils
 import indi.liyi.viewer.ViewData
 import top.zibin.luban.Luban
 import top.zibin.luban.OnCompressListener
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.util.*
 
 
@@ -145,7 +151,7 @@ class ObtainMessageFragment: Fragment() {
 
                 binding.layerAudioResult.visibility = if (hasAudio) VISIBLE else GONE
                 binding.layerGetAudio.visibility = if (hasAudio) GONE else VISIBLE
-                binding.llAudioPlay.visibility = if (hasAudio) VISIBLE else GONE
+//                binding.llAudioPlay.visibility = if (hasAudio) VISIBLE else GONE
             }
         )
         lifecycle.addObserver(recorderLifecycleObserver)
@@ -240,6 +246,17 @@ class ObtainMessageFragment: Fragment() {
         // 用户选择录音文件
         binding.btnSelectSound.setOnClickListener {
             photoHelper.setCrop(false).selectAudio(activity!!)
+//            SingleAudioPicker.showPicker(context!!) {
+//                val audioFile = File(it.contentUri.path)
+//                ToastUtils.showToast(audioFile.absolutePath)
+//                if (!audioFile.parentFile.parentFile.absolutePath.equals(SystemConstant.SoundFolder)) {
+//                    val copyResult = FileIOUtils.writeFileFromIS(File(SystemConstant.SoundFolder, audioFile.name), FileInputStream(audioFile))
+//                    XLog.e("拷贝结果："+copyResult)
+//                    obtainMessageViewModel.updateMessageAudio(File(SystemConstant.SoundFolder, audioFile.name).absolutePath)
+//                } else {
+//                    obtainMessageViewModel.updateMessageAudio(audioFile.absolutePath)
+//                }
+//            }
         }
 
         binding.btnStartRecord.setOnTouchListener { view, motionEvent ->
@@ -315,7 +332,8 @@ class ObtainMessageFragment: Fragment() {
                             }
                                 // 如果当前文件不在camera缓存文件夹下，则移动该文件
                                 if (!file!!.parentFile.absolutePath.equals(SystemConstant.CameraFolder)) {
-                                    FileUtils.renameFile(file.absolutePath, File(SystemConstant.CameraFolder, fileName).absolutePath)
+                                    val copyResult = FileIOUtils.writeFileFromIS(File(SystemConstant.CameraFolder, fileName), FileInputStream(file))
+                                    XLog.e("拷贝结果："+copyResult)
                                     // 跳转回原Fragment，展示拍摄的照片
                                     ViewModelProvider(requireActivity()).get(ObtainMessageViewModel::class.java).updateMessagePic(File(SystemConstant.CameraFolder, fileName).absolutePath)
                                 } else {
@@ -331,7 +349,8 @@ class ObtainMessageFragment: Fragment() {
                 } else if (fileName.endsWith(".mp3")||fileName.endsWith(".wav")||fileName.endsWith(".amr")||fileName.endsWith(".m4a")) {
                     ToastUtils.showToast(it.absolutePath)
                     if (!it.parentFile.parentFile.absolutePath.equals(SystemConstant.SoundFolder)) {
-                        FileUtils.renameFile(it.absolutePath, File(SystemConstant.SoundFolder, fileName).absolutePath)
+                        val copyResult = FileIOUtils.writeFileFromIS(File(SystemConstant.SoundFolder, fileName), FileInputStream(it))
+                        XLog.e("拷贝结果："+copyResult)
                         obtainMessageViewModel.updateMessageAudio(File(SystemConstant.SoundFolder, fileName).absolutePath)
                     } else {
                         obtainMessageViewModel.updateMessageAudio(it.absolutePath)
@@ -344,7 +363,8 @@ class ObtainMessageFragment: Fragment() {
             ToastUtils.showToast(it.message)
         }
 
-        binding.voicePlayerView.setOnClickListener {
+        binding.tvAudioName.setOnClickListener {
+            binding.llAudioPlay.visibility = if (binding.llAudioPlay.visibility == VISIBLE) GONE else VISIBLE
             // 判断当前播放的文件是否在缓存文件夹内，如果不在首先下载该文件
             val fileUrl = obtainMessageViewModel.getMessageLiveData().value!!.mediaUrl!!
             val localFile = obtainMessageViewModel.getLocalFileFromNetUrl(fileUrl, AttachmentType.AUDIO)
@@ -512,10 +532,6 @@ class ObtainMessageFragment: Fragment() {
                 .watch(0) // 开启浏览
 
         }
-        // 点击音频名称
-        binding.tvAudioName.setOnClickListener {
-
-        }
     }
 
     override fun onDestroyView() {
@@ -563,4 +579,6 @@ class ObtainMessageFragment: Fragment() {
         super.onDestroy()
         lifecycle.removeObserver(recorderLifecycleObserver)
     }
+
+    companion object
 }
