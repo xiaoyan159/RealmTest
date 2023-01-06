@@ -22,7 +22,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.crazylegend.audiopicker.pickers.SingleAudioPicker
 import com.easytools.tools.DateUtils
 import com.easytools.tools.DeviceUtils
 import com.easytools.tools.DisplayUtils
@@ -48,7 +47,6 @@ import com.navinfo.volvo.util.PhotoLoader
 import com.navinfo.volvo.utils.EasyMediaFile
 import com.navinfo.volvo.utils.SystemConstant
 import com.nhaarman.supertooltips.ToolTip
-import com.robertlevonyan.components.picker.*
 import indi.liyi.viewer.Utils
 import indi.liyi.viewer.ViewData
 import top.zibin.luban.Luban
