@@ -21,7 +21,7 @@ interface GreetingMessageDao {
     /**
      * 分页查询
      */
-    @Query("SELECT * FROM GreetingMessage")
+    @Query("SELECT * FROM GreetingMessage order by sendDate DESC")
     fun findAllByDataSource(): PagingSource<Int, GreetingMessage>
 
     /**

@@ -2,7 +2,6 @@ package com.navinfo.volvo.ui.fragments.message
 
 import android.content.DialogInterface
 import android.graphics.Paint
-import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -16,18 +15,13 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.easytools.tools.DateUtils
-import com.easytools.tools.DeviceUtils
 import com.easytools.tools.DisplayUtils
 import com.easytools.tools.FileIOUtils
-import com.easytools.tools.FileUtils
 import com.easytools.tools.ResourceUtils
 import com.easytools.tools.ToastUtils
 import com.elvishew.xlog.XLog
@@ -54,7 +48,6 @@ import top.zibin.luban.Luban
 import top.zibin.luban.OnCompressListener
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.util.*
 
 
@@ -177,7 +170,7 @@ class ObtainMessageFragment: Fragment() {
             obtainMessageViewModel.updateMessageAudio("")
         }
 
-        val sendToArray = mutableListOf<String>("绑定车辆1(LYVXFEFEXNL754427)")
+        val sendToArray = mutableListOf<String>("LYVXFEFEXNL754427")
         binding.edtSendTo.adapter = ArrayAdapter<String>(context!!,
             android.R.layout.simple_dropdown_item_1line, android.R.id.text1, sendToArray)
         binding.edtSendTo.onItemSelectedListener = object: OnItemSelectedListener {
@@ -535,7 +528,7 @@ class ObtainMessageFragment: Fragment() {
 
     val confirmCallback = object: ObtainMessageViewModel.MyConfirmCallback {
         override fun onSucess() {
-            findNavController().navigate(R.id.navi)
+            findNavController().navigate(R.id.navigation_home)
         }
     }
 

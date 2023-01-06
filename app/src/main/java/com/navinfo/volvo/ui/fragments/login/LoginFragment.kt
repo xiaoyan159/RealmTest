@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.navinfo.volvo.R
@@ -16,11 +17,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class LoginFragment : BaseFragment() {
 
     //    private var loginViewModel:LoginViewModel by viewModel(get())
-    private var viewBinding: FragmentLoginBinding? = null
+    private lateinit var viewBinding: FragmentLoginBinding
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = viewBinding!!
 
     private val viewModel by viewModels<LoginViewModel> { viewModelFactoryProvider }
 
@@ -29,19 +27,21 @@ class LoginFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewBinding = FragmentLoginBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-        binding.loginFragmentRegisterButton.setOnClickListener {
+        viewBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
+        viewBinding.lifecycleOwner = this
+        initView()
+        return viewBinding.root
+    }
+
+    private fun initView() {
+        viewBinding.loginFragmentRegisterButton.setOnClickListener {
+
         }
-        binding.loginFragmentLoginButton.setOnClickListener {
+        viewBinding.loginFragmentLoginButton.setOnClickListener {
+//            viewModel.login(viewBinding.loginFragmentUserLayout)
             findNavController().navigate(R.id.action_login_to_home)
         }
-        return root
     }
 
 
-    override fun onDestroyView() {
-        viewBinding = null
-        super.onDestroyView()
-    }
 }

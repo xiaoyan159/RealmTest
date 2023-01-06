@@ -6,14 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.navinfo.volvo.database.AppDatabase
 import com.navinfo.volvo.database.entity.User
+import com.navinfo.volvo.util.SharedPreferenceHelper
 import javax.inject.Inject
 
-class LoginViewModel @Inject constructor(private val dataBase: AppDatabase) : ViewModel() {
+class LoginViewModel @Inject constructor(private val sharedPreferenceHelper: SharedPreferenceHelper) : ViewModel() {
 
-    private val _user = MutableLiveData<User>().apply {
-
-    }
-    val user: LiveData<User> = _user
+//    val user: LiveData<User> = _user
 
     fun liveDataOnclick(view: View) {
 
