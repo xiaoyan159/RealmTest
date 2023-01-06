@@ -103,7 +103,7 @@ class EasyMediaFile {
     fun selectAudio(activity: Activity) {
         isCrop = false
         val intent = Intent(Intent.ACTION_PICK, null).apply {
-            setDataAndType(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "*/*")
+            setDataAndType(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "audio/*")
         }
         if (Looper.myLooper() == Looper.getMainLooper()) {
             selectFileInternal(intent, activity, 1)
