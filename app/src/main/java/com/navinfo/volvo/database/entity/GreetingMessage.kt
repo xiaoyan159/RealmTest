@@ -38,9 +38,9 @@ data class GreetingMessage @JvmOverloads constructor(
     var sendType: String? = "",
     var del: String? = "",
     var version: String? = "",
-    /**
-     * 附件列表
-     */
-    var attachment: MutableList<Attachment> = mutableListOf(),
+//    /**
+//     * 附件列表
+//     */
+//    var attachment: MutableList<Attachment> = mutableListOf(),
     var read: Boolean = false,
 )

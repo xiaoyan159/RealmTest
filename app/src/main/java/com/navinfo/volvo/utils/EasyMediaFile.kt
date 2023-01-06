@@ -103,7 +103,7 @@ class EasyMediaFile {
     fun selectAudio(activity: Activity) {
         isCrop = false
         val intent = Intent(Intent.ACTION_PICK, null).apply {
-            setDataAndType(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "audio/*")
+            setDataAndType(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "*/*")
         }
         if (Looper.myLooper() == Looper.getMainLooper()) {
             selectFileInternal(intent, activity, 1)
@@ -131,7 +131,7 @@ class EasyMediaFile {
      * 选择文件
      */
     private fun selectFileInternal(intent: Intent, activity: Activity, type: Int) {
-        val resolveInfoList = activity.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+        var resolveInfoList = activity.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
         if (resolveInfoList.isEmpty()) {
             error?.invoke(IllegalStateException("No Activity found to handle Intent "))
         } else {
