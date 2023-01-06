@@ -3,6 +3,7 @@ package com.navinfo.volvo.di.module
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.navinfo.volvo.di.key.ViewModelKey
+import com.navinfo.volvo.ui.MainActivityViewModel
 import com.navinfo.volvo.ui.fragments.home.HomeViewModel
 import com.navinfo.volvo.ui.fragments.login.LoginViewModel
 import com.navinfo.volvo.ui.fragments.message.ObtainMessageViewModel
@@ -21,6 +22,11 @@ abstract class ViewModelModule {
 
     @IntoMap
     @Binds
+    @ViewModelKey(MainActivityViewModel::class)
+    abstract fun bindMainViewModel(viewModel: MainActivityViewModel): ViewModel
+
+    @IntoMap
+    @Binds
     @ViewModelKey(LoginViewModel::class)
     abstract fun bindLoginFragmentViewModel(viewModel: LoginViewModel): ViewModel
 
@@ -33,4 +39,6 @@ abstract class ViewModelModule {
     @Binds
     @ViewModelKey(ObtainMessageViewModel::class)
     abstract fun bindObtainMessageFragmentViewModel(viewModel: ObtainMessageViewModel): ViewModel
+
+
 }

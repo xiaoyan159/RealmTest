@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull
 @TypeConverters(AttachmentConverters::class)
 data class GreetingMessage @JvmOverloads constructor(
     @PrimaryKey(autoGenerate = true)
-    var uuid:Long = 0,
+    var uuid: Long = 0,
     var id: Long = 0,
     var searchValue: String? = "",
     var createBy: String? = "",
@@ -41,5 +41,6 @@ data class GreetingMessage @JvmOverloads constructor(
     /**
      * 附件列表
      */
-    var attachment: MutableList<Attachment> = mutableListOf()
+    var attachment: MutableList<Attachment> = mutableListOf(),
+    var read: Boolean = false,
 )

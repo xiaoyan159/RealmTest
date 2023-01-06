@@ -1,20 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragments.home.HomeFragment">
 
-    <data>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/home_search"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <import type="android.view.View" />
-
-        <variable
-            name="HomeViewModel"
-            type="com.navinfo.volvo.ui.fragments.home.HomeViewModel" />
-    </data>
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入查询内容" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.yanzhenjie.recyclerview.SwipeRecyclerView
+        android:background="@color/gray1"
         android:id="@+id/home_recyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ui.fragments.home.HomeFragment" />
-</layout>
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/home_search" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

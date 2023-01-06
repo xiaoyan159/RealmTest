@@ -4,14 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.navinfo.volvo.R
 import com.navinfo.volvo.databinding.FragmentLoginBinding
-import com.navinfo.volvo.ui.BaseFragment
+import com.navinfo.volvo.ui.fragments.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 

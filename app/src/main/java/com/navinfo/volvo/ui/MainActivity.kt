@@ -4,7 +4,11 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -30,18 +34,23 @@ import com.navinfo.volvo.R
 import com.navinfo.volvo.databinding.ActivityMainBinding
 import com.navinfo.volvo.utils.SystemConstant
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private val viewModel by viewModels<MainActivityViewModel> { viewModelFactoryProvider }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setupNavigation()
+
 
         XXPermissions.with(this)
             // 申请单个权限
@@ -61,6 +70,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     // 在SD卡创建项目目录
                     createRootFolder()
+                    setupNavigation()
                 }
 
                 override fun onDenied(permissions: MutableList<String>, never: Boolean) {
@@ -89,6 +99,20 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        lifecycleScope.launch{
+            viewModel.getUnreadCount().collect {
+                runOnUiThread{
+                    if(it == 0L){
+                        navView.removeBadge(R.id.navigation_home)
+                    }else{
+                        var badge = navView.getOrCreateBadge(R.id.navigation_home);
+                        badge.number = it.toInt()
+                    }
+                }
+            }
+        }
+
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
             if (destination.id == R.id.navigation_home
                 || destination.id == R.id.navigation_dashboard

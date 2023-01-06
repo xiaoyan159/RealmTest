@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.navinfo.volvo.R
 import com.navinfo.volvo.databinding.FragmentHomeBinding
 import com.navinfo.volvo.tools.DisplayUtil
-import com.navinfo.volvo.ui.BaseFragment
+import com.navinfo.volvo.ui.fragments.BaseFragment
 import com.yanzhenjie.recyclerview.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -21,27 +21,30 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class HomeFragment : BaseFragment(), OnItemClickListener, OnItemMenuClickListener {
 
+    private var _binding: FragmentHomeBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
     private val viewModel by viewModels<HomeViewModel> { viewModelFactoryProvider }
 
     private lateinit var messageAdapter: HomeAdapter
-    private lateinit var mDataBinding: FragmentHomeBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
-        mDataBinding.lifecycleOwner = this
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        val root: View = binding.root
         initView()
-        return mDataBinding.root
+        return root
     }
 
-
     private fun initView() {
-        mDataBinding.homeViewModel = viewModel
+//        mDataBinding.homeViewModel = viewModel
         messageAdapter = HomeAdapter(this)
-        val recyclerview: SwipeRecyclerView = mDataBinding.homeRecyclerview
+        val recyclerview: SwipeRecyclerView = binding.homeRecyclerview
         recyclerview.adapter = null //先设置null，否则会报错
         //创建菜单选项
         //注意：使用滑动菜单不能开启滑动删除，否则只有滑动删除没有滑动菜单
@@ -96,6 +99,7 @@ class HomeFragment : BaseFragment(), OnItemClickListener, OnItemMenuClickListene
 
     override fun onDestroyView() {
         super.onDestroyView()
+        _binding = null
     }
 
     override fun onItemClick(view: View?, adapterPosition: Int) {

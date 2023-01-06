@@ -1,27 +1,42 @@
 package com.navinfo.volvo.database.dao
 
 import androidx.paging.PagingSource
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.navinfo.volvo.database.entity.GreetingMessage
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GreetingMessageDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(vararg check: GreetingMessage)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(list: List<GreetingMessage>)
+    @Insert
+    fun insert(message: GreetingMessage): Long
 
-    @Query("SELECT * FROM GreetingMessage where id =:id")
-    fun findCheckManagerById(id: Long): GreetingMessage?
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    fun update(message: GreetingMessage)
 
-    @Query("SELECT * FROM GreetingMessage")
-    fun findAllByFlow(): Flow<List<GreetingMessage>>
 
+    @Query("SELECT count(id) FROM GreetingMessage WHERE read = 0")
+    fun countUnreadByFlow(): Flow<Long>
+
+    /**
+     * 分页查询
+     */
     @Query("SELECT * FROM GreetingMessage")
     fun findAllByDataSource(): PagingSource<Int, GreetingMessage>
+
+    /**
+     * 检查某条数据是否存在
+     */
+    @Query("SELECT id From GreetingMessage WHERE id = :id LIMIT 1")
+    fun getMessageId(id: Long): Long
+
+    @Transaction
+    suspend fun insertOrUpdate(list: List<GreetingMessage>) {
+        for (message in list) {
+            val id = getMessageId(message.id)
+            if (id == 0L) {
+                insert(message)
+            }
+        }
+    }
 }

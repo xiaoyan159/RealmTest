@@ -13,9 +13,10 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
 import java.util.*
+import javax.inject.Inject
 
 
-class ObtainMessageViewModel: ViewModel() {
+class ObtainMessageViewModel @Inject constructor() : ViewModel() {
     private val msgLiveData: MutableLiveData<GreetingMessage> by lazy {
         MutableLiveData<GreetingMessage>()
     }
@@ -40,7 +41,7 @@ class ObtainMessageViewModel: ViewModel() {
 
         for (attachment in this.msgLiveData.value!!.attachment) {
             if (attachment.attachmentType == AttachmentType.PIC) {
-                if (picUrl==null||picUrl.isEmpty()) {
+                if (picUrl == null || picUrl.isEmpty()) {
                     this.msgLiveData.value!!.attachment.remove(attachment)
                 } else {
                     attachment.pathUrl = picUrl
@@ -48,8 +49,14 @@ class ObtainMessageViewModel: ViewModel() {
                 hasPic = true
             }
         }
-        if (!hasPic&&picUrl!=null) {
-            this.msgLiveData.value!!.attachment.add(Attachment(UUID.randomUUID().toString(), picUrl, AttachmentType.PIC))
+        if (!hasPic && picUrl != null) {
+            this.msgLiveData.value!!.attachment.add(
+                Attachment(
+                    UUID.randomUUID().toString(),
+                    picUrl,
+                    AttachmentType.PIC
+                )
+            )
         }
         this.msgLiveData.postValue(this.msgLiveData.value)
     }
@@ -59,7 +66,7 @@ class ObtainMessageViewModel: ViewModel() {
         var hasAudio = false
         for (attachment in this.msgLiveData.value!!.attachment) {
             if (attachment.attachmentType == AttachmentType.AUDIO) {
-                if (audioUrl==null||audioUrl.isEmpty()) {
+                if (audioUrl == null || audioUrl.isEmpty()) {
                     this.msgLiveData.value!!.attachment.remove(attachment)
                 } else {
                     attachment.pathUrl = audioUrl
@@ -67,8 +74,14 @@ class ObtainMessageViewModel: ViewModel() {
                 hasAudio = true
             }
         }
-        if (!hasAudio&&audioUrl!=null) {
-            this.msgLiveData.value!!.attachment.add(Attachment(UUID.randomUUID().toString(), audioUrl, AttachmentType.AUDIO))
+        if (!hasAudio && audioUrl != null) {
+            this.msgLiveData.value!!.attachment.add(
+                Attachment(
+                    UUID.randomUUID().toString(),
+                    audioUrl,
+                    AttachmentType.AUDIO
+                )
+            )
         }
         this.msgLiveData.postValue(this.msgLiveData.value)
     }
@@ -97,7 +110,11 @@ class ObtainMessageViewModel: ViewModel() {
             try {
                 val requestFile: RequestBody =
                     RequestBody.create("multipart/form-data".toMediaTypeOrNull(), attachmentFile)
-                val body = MultipartBody.Part.createFormData("picture", attachmentFile.getName(), requestFile)
+                val body = MultipartBody.Part.createFormData(
+                    "picture",
+                    attachmentFile.getName(),
+                    requestFile
+                )
                 val result = NavinfoVolvoCall.getApi().uploadAttachment(body)
                 XLog.d(result.code)
                 if (result.code == 200) { // 请求成功

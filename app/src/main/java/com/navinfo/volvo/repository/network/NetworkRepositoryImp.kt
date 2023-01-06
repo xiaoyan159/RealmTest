@@ -28,7 +28,9 @@ class NetworkRepositoryImp @Inject constructor(
                 val result = netWorkService.queryCardListByApp(stringBody)
                 if (result.isSuccessful) {
                     val body = result.body()
-                    messageDao.insert(body!!.data!!.rows)
+                    if(body!!.data != null && body.data!!.rows != null){
+                        messageDao.insertOrUpdate(body.data!!.rows)
+                    }
                     NetResult.Success(body)
                 } else {
                     NetResult.Success(null)
