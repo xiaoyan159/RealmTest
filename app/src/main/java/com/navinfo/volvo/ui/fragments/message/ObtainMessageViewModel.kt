@@ -22,9 +22,10 @@ import okhttp3.RequestBody
 import java.io.File
 import java.io.FileInputStream
 import java.util.*
+import javax.inject.Inject
 
 
-class ObtainMessageViewModel: ViewModel() {
+class ObtainMessageViewModel @Inject constructor(): ViewModel() {
     private val msgLiveData: MutableLiveData<GreetingMessage> by lazy {
         MutableLiveData<GreetingMessage>()
     }

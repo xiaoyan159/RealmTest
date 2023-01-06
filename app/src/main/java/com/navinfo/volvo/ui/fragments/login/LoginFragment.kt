@@ -29,7 +29,6 @@ class LoginFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         viewBinding = FragmentLoginBinding.inflate(inflater, container, false)
         val root: View = binding.root
         binding.loginFragmentRegisterButton.setOnClickListener {

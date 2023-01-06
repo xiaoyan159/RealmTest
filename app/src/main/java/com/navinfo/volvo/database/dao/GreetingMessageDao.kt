@@ -36,6 +36,8 @@ interface GreetingMessageDao {
             val id = getMessageId(message.id)
             if (id == 0L) {
                 insert(message)
+            }else{
+                update(message)
             }
         }
     }

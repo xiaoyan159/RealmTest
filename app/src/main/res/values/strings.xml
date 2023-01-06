@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NavinfoVolvo</string>
+    <string name="app_name">VolvoMessage</string>
     <string name="title_home">Message</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>

@@ -24,7 +24,6 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.yanzhenjie.recyclerview.SwipeRecyclerView
-        android:background="@color/gray1"
         android:id="@+id/home_recyclerview"
         android:layout_width="0dp"
         android:layout_height="0dp"

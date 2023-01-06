@@ -1,14 +1,12 @@
 package com.navinfo.volvo.ui
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -32,12 +30,10 @@ import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import com.navinfo.volvo.R
 import com.navinfo.volvo.databinding.ActivityMainBinding
+import com.navinfo.volvo.ui.message.MessageActivity
 import com.navinfo.volvo.utils.SystemConstant
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
@@ -100,12 +96,12 @@ class MainActivity : BaseActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        lifecycleScope.launch{
+        lifecycleScope.launch {
             viewModel.getUnreadCount().collect {
-                runOnUiThread{
-                    if(it == 0L){
+                runOnUiThread {
+                    if (it == 0L) {
                         navView.removeBadge(R.id.navigation_home)
-                    }else{
+                    } else {
                         var badge = navView.getOrCreateBadge(R.id.navigation_home);
                         badge.number = it.toInt()
                     }
@@ -117,7 +113,6 @@ class MainActivity : BaseActivity() {
             if (destination.id == R.id.navigation_home
                 || destination.id == R.id.navigation_dashboard
                 || destination.id == R.id.navigation_notifications
-                || destination.id == R.id.navigation_obtain_message
             ) {
                 runOnUiThread {
                     navView.visibility = View.VISIBLE
@@ -129,6 +124,11 @@ class MainActivity : BaseActivity() {
                     newMessageView.visibility = View.GONE
                 }
             }
+        }
+        binding.newMessageFab.setOnClickListener {
+//            val intent: Intent = Intent(this@MainActivity, MessageActivity::class.java)
+//            startActivity(intent)
+            navController.navigate(R.id.navigation_obtain_message)
         }
     }
 

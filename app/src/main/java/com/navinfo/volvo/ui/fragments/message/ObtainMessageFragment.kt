@@ -512,6 +512,7 @@ class ObtainMessageFragment: Fragment() {
                     obtainMessageViewModel.insertCardByApp()
                 } else {
                     obtainMessageViewModel.updateCardByApp()
+
                 }
             }
         }
