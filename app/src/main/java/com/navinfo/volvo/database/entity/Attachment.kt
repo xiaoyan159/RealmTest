@@ -1,4 +1,4 @@
-package com.navinfo.volvo.model
+package com.navinfo.volvo.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -8,7 +8,7 @@ import com.navinfo.volvo.tools.GsonUtil
 
 @Entity(tableName = "Attachment")
 data class Attachment(
-    @PrimaryKey()
+    @PrimaryKey
     var id: String,
     var pathUrl: String,
     var attachmentType: AttachmentType

@@ -121,9 +121,10 @@
                         android:orientation="horizontal">
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tv_photo_name"
-                            android:layout_width="wrap_content"
+                            android:textColor="@android:color/holo_blue_dark"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text=""></com.google.android.material.textview.MaterialTextView>
+                            android:layout_weight="1"></com.google.android.material.textview.MaterialTextView>
                         <Space
                             android:layout_width="@dimen/default_widget_padding"
                             android:layout_height="wrap_content"></Space>
@@ -147,7 +148,6 @@
 
                 <com.nhaarman.supertooltips.ToolTipRelativeLayout
                     android:id="@+id/tt_pic"
-                    app:layout_constraintTop_toBottomOf="@id/ti_layout_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
@@ -156,6 +156,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
+                    android:layout_marginVertical="@dimen/default_widget_padding"
                     android:orientation="horizontal">
 
                     <TextView
@@ -180,7 +181,7 @@
                             android:layout_height="wrap_content"
                             style="@style/Widget.Material3.Button.ElevatedButton"
                             app:icon="@drawable/ic_baseline_fiber_manual_record_24"
-                            android:text="录制音频"
+                            android:text="长按录音"
                             android:padding="@dimen/default_widget_padding"></com.google.android.material.button.MaterialButton>
                         <Space
                             android:layout_width="@dimen/default_widget_padding"
@@ -204,8 +205,10 @@
                         android:orientation="horizontal">
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tv_audio_name"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:textColor="@android:color/holo_blue_dark"
+                            android:layout_weight="1"
                             android:text=""></com.google.android.material.textview.MaterialTextView>
                         <Space
                             android:layout_width="@dimen/default_widget_padding"
@@ -219,16 +222,36 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/img_sound_play"
-                    android:layout_width="wrap_content"
+                <!--增加音频播放按钮-->
+                <LinearLayout
+                    android:id="@+id/ll_audio_play"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_baseline_volume_up_24"
+                    android:layout_gravity="center"
                     android:visibility="gone"
-                    android:layout_gravity="center"></com.google.android.material.imageview.ShapeableImageView>
+                    android:orientation="horizontal">
+                    <me.jagar.chatvoiceplayerlibrary.VoicePlayerView
+                        android:id="@+id/voicePlayerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:enableVisualizer="true"
+                        app:visualizationPlayedColor="@color/teal_200"
+                        app:visualizationNotPlayedColor="@color/teal_700"
+                        app:playPauseBackgroundColor="@color/teal_700"
+                        app:timingBackgroundColor="@color/purple_200"
+                        app:seekBarProgressColor="@color/purple_500"
+                        app:showShareButton="false"
+                        app:shareCornerRadius="100"
+                        app:playPauseCornerRadius="100"
+                        app:showTiming="true"
+                        app:viewCornerRadius="100"
+                        app:viewBackground="@android:color/transparent"
+                        app:progressTimeColor="@color/purple_500"
+                        app:seekBarThumbColor="@color/teal_200"/>
+                </LinearLayout>
+
                 <com.nhaarman.supertooltips.ToolTipRelativeLayout
                     android:id="@+id/tt_audio"
-                    app:layout_constraintTop_toBottomOf="@id/ti_layout_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </LinearLayout>
@@ -283,7 +306,6 @@
 
                 <com.nhaarman.supertooltips.ToolTipRelativeLayout
                     android:id="@+id/tt_send_from"
-                    app:layout_constraintTop_toBottomOf="@id/ti_layout_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
@@ -379,4 +401,11 @@
             android:layout_weight="1"
             android:text="确认提交"></com.google.android.material.button.MaterialButton>
     </LinearLayout>
+
+    <indi.liyi.viewer.ImageViewer
+        android:id="@+id/imageViewer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        app:ivr_dragMode="agile" />
 </androidx.constraintlayout.widget.ConstraintLayout>

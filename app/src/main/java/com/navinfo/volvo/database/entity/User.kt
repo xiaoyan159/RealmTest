@@ -1,4 +1,4 @@
-package com.navinfo.volvo.model
+package com.navinfo.volvo.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -7,8 +7,6 @@ import androidx.room.TypeConverters
 import com.google.gson.reflect.TypeToken
 import com.navinfo.volvo.tools.GsonUtil
 import org.jetbrains.annotations.NotNull
-import java.time.LocalDateTime
-import java.time.LocalTime
 import javax.inject.Inject
 
 @Entity(tableName = "User")

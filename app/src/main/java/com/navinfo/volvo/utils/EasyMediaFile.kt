@@ -131,7 +131,7 @@ class EasyMediaFile {
      * 选择文件
      */
     private fun selectFileInternal(intent: Intent, activity: Activity, type: Int) {
-        val resolveInfoList = activity.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+        var resolveInfoList = activity.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
         if (resolveInfoList.isEmpty()) {
             error?.invoke(IllegalStateException("No Activity found to handle Intent "))
         } else {

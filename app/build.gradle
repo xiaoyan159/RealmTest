@@ -136,9 +136,13 @@ dependencies {
     // 日志工具 https://github.com/elvishew/xLog/blob/master/README_ZH.md
     implementation 'com.elvishew:xlog:1.10.1'
     //加载图片的依赖包
-    implementation ("com.github.bumptech.glide:glide:4.11.0") {
+    implementation("com.github.bumptech.glide:glide:4.11.0") {
         exclude group: "com.android.support"
     }
+    // 多媒体播放库 https://github.com/JagarYousef/ChatVoicePlayer
+    implementation 'com.github.JagarYousef:ChatVoicePlayer:1.1.0'
+    // 图片查看器 https://github.com/XiaoGe-1996/ImageViewer
+    implementation 'com.github.XiaoGe-1996:ImageViewer:v1.0.0'
 }
 
 kapt {

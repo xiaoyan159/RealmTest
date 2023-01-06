@@ -10,6 +10,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.easytools.tools.FileUtils
+import com.elvishew.xlog.BuildConfig
 import com.elvishew.xlog.LogConfiguration
 import com.elvishew.xlog.LogLevel
 import com.elvishew.xlog.XLog
@@ -25,7 +26,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
-import com.navinfo.volvo.BuildConfig
 import com.navinfo.volvo.R
 import com.navinfo.volvo.databinding.ActivityMainBinding
 import com.navinfo.volvo.utils.SystemConstant
@@ -55,7 +55,8 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onGranted(permissions: MutableList<String>, all: Boolean) {
                     if (!all) {
-                        Toast.makeText(this@MainActivity, "获取部分权限成功，但部分权限未正常授予", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MainActivity, "获取部分权限成功，但部分权限未正常授予", Toast.LENGTH_SHORT)
+                            .show()
                         return
                     }
                     // 在SD卡创建项目目录
@@ -64,7 +65,8 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onDenied(permissions: MutableList<String>, never: Boolean) {
                     if (never) {
-                        Toast.makeText(this@MainActivity, "永久拒绝授权,请手动授权文件读写权限", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MainActivity, "永久拒绝授权,请手动授权文件读写权限", Toast.LENGTH_SHORT)
+                            .show()
                         // 如果是被永久拒绝就跳转到应用权限系统设置页面
                         XXPermissions.startPermissionActivity(this@MainActivity, permissions)
                     } else {
@@ -146,10 +148,11 @@ class MainActivity : AppCompatActivity() {
 
         val consolePrinter: Printer = ConsolePrinter() // 通过 System.out 打印日志到控制台的打印器
 
-        val filePrinter: Printer = FilePrinter.Builder("${SystemConstant.ROOT_PATH}/Logs") // 指定保存日志文件的路径
-            .fileNameGenerator(DateFileNameGenerator()) // 指定日志文件名生成器，默认为 ChangelessFileNameGenerator("log")
-            .backupStrategy(NeverBackupStrategy()) // 指定日志文件备份策略，默认为 FileSizeBackupStrategy(1024 * 1024)
-            .build()
+        val filePrinter: Printer =
+            FilePrinter.Builder("${SystemConstant.ROOT_PATH}/Logs") // 指定保存日志文件的路径
+                .fileNameGenerator(DateFileNameGenerator()) // 指定日志文件名生成器，默认为 ChangelessFileNameGenerator("log")
+                .backupStrategy(NeverBackupStrategy()) // 指定日志文件备份策略，默认为 FileSizeBackupStrategy(1024 * 1024)
+                .build()
 
         XLog.init( // 初始化 XLog
             config,  // 指定日志配置，如果不指定，会默认使用 new LogConfiguration.Builder().build()
