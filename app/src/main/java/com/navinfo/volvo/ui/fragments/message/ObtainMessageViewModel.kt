@@ -158,6 +158,7 @@ class ObtainMessageViewModel: ViewModel() {
                     }
                 } else {
                     ToastUtils.showToast(result.msg)
+                    XLog.d(result.msg)
                 }
             } catch (e: Exception) {
                 ToastUtils.showToast(e.message)
