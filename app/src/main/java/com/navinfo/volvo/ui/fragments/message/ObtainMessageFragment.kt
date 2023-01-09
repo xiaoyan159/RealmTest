@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
@@ -90,7 +91,8 @@ class ObtainMessageFragment: Fragment() {
         _binding = FragmentObtainMessageBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-       obtainMessageViewModel.setCurrentMessage(GreetingMessage())
+        val greetingMessage = GreetingMessage()
+        obtainMessageViewModel.setCurrentMessage(greetingMessage)
 
         obtainMessageViewModel?.getMessageLiveData()?.observe(
             viewLifecycleOwner, Observer {
@@ -164,6 +166,21 @@ class ObtainMessageFragment: Fragment() {
         return root
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (obtainMessageViewModel.getMessageLiveData().value!=null&&"已发送".equals((obtainMessageViewModel.getMessageLiveData().value as GreetingMessage).status)) {
+            binding.tvMessageTitle.isEnabled=false
+            binding.btnStartPhoto.isEnabled=false
+            binding.btnStartCamera.isEnabled=false
+            binding.btnStartRecord.isEnabled=false
+            binding.btnSelectSound.isEnabled=false
+            binding.edtSendFrom.isEnabled=false
+            binding.edtSendTo.isEnabled=false
+            binding.btnSendTime.isEnabled=false
+            binding.btnObtainMessageConfirm.isEnabled=false
+        }
+    }
+
     fun initView() {
         // 设置问候信息提示的红色星号
         binding.tiLayoutTitle.markRequiredInRed()
@@ -207,7 +224,6 @@ class ObtainMessageFragment: Fragment() {
                         obtainMessageViewModel.updateMessageSendTime(DateUtils.date2Str(sendDate, dateSendFormat))
                     }
                 }
-
             }
             dialog.show(parentFragmentManager, "SelectSendTime")
         }
