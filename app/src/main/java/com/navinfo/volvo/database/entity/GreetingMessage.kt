@@ -4,8 +4,6 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import kotlinx.android.parcel.Parcelize
-import org.jetbrains.annotations.NotNull
 
 @Entity(tableName = "GreetingMessage")
 @TypeConverters(AttachmentConverters::class)
@@ -37,7 +35,7 @@ data class GreetingMessage @JvmOverloads constructor(
     var sendVins: String? = "",
     var sendType: String? = "",
     var del: String? = "",
-    var version: String? = "",
+    var version: String? = "1",
 //    /**
 //     * 附件列表
 //     */

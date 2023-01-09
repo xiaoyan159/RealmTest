@@ -144,7 +144,7 @@ dependencies {
     implementation 'com.github.JagarYousef:ChatVoicePlayer:1.1.0'
     // 图片查看器 https://github.com/XiaoGe-1996/ImageViewer
     implementation 'com.github.XiaoGe-1996:ImageViewer:v1.0.0'
-
+    implementation 'com.github.majidarabi:AndroidFilePicker:0.2.1'
     // 数据存储 Preferences DataStore 键值对
     implementation "androidx.datastore:datastore-preferences:1.0.0"
     // 数据存储 Proto DataStore 对象

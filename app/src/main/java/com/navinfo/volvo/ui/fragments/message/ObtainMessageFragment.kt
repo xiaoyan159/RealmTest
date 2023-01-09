@@ -13,6 +13,7 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -29,6 +30,13 @@ import com.easytools.tools.ResourceUtils
 import com.easytools.tools.ThreadPoolUtils.runOnUiThread
 import com.easytools.tools.ToastUtils
 import com.elvishew.xlog.XLog
+import com.github.file_picker.FileType
+import com.github.file_picker.ListDirection
+import com.github.file_picker.adapter.FilePickerAdapter
+import com.github.file_picker.data.model.Media
+import com.github.file_picker.extension.showFilePicker
+import com.github.file_picker.listener.OnItemClickListener
+import com.github.file_picker.listener.OnSubmitClickListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.gredicer.datetimepicker.DateTimePickerFragment
 import com.hjq.permissions.OnPermissionCallback
@@ -41,6 +49,7 @@ import com.navinfo.volvo.database.entity.AttachmentType
 import com.navinfo.volvo.database.entity.GreetingMessage
 import com.navinfo.volvo.databinding.FragmentObtainMessageBinding
 import com.navinfo.volvo.http.DownloadCallback
+import com.navinfo.volvo.model.VolvoModel
 import com.navinfo.volvo.ui.markRequiredInRed
 import com.navinfo.volvo.util.PhotoLoader
 import com.navinfo.volvo.utils.EasyMediaFile
@@ -55,6 +64,7 @@ import top.zibin.luban.OnCompressListener
 import java.io.File
 import java.io.FileInputStream
 import java.util.*
+import kotlin.streams.toList
 
 
 @AndroidEntryPoint
@@ -70,6 +80,7 @@ class ObtainMessageFragment : Fragment() {
 
     private val dateSendFormat = "yyyy-MM-dd HH:mm:ss"
     private val dateShowFormat = "yyyy-MM-dd HH:mm"
+    private var startRecordTime = System.currentTimeMillis()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -155,12 +166,11 @@ class ObtainMessageFragment : Fragment() {
 
                 binding.layerAudioResult.visibility = if (hasAudio) VISIBLE else GONE
                 binding.layerGetAudio.visibility = if (hasAudio) GONE else VISIBLE
-                //                binding.llAudioPlay.visibility = if (hasAudio) VISIBLE else GONE
+                if (!hasAudio) {
+                    binding.llAudioPlay.visibility = GONE
+                }
             }
         )
-
-
-
         lifecycle.addObserver(recorderLifecycleObserver)
         initView()
         return root
@@ -184,15 +194,12 @@ class ObtainMessageFragment : Fragment() {
         binding.imgAudioDelete.setOnClickListener {
             obtainMessageViewModel.updateMessageAudio("")
         }
-
-        val sendToArray = mutableListOf<String>("LYVXFEFEXNL754427")
-        binding.edtSendTo.adapter = ArrayAdapter<String>(
-            context!!,
-            android.R.layout.simple_dropdown_item_1line, android.R.id.text1, sendToArray
-        )
-        binding.edtSendTo.onItemSelectedListener = object : OnItemSelectedListener {
+        val sendToArray = mutableListOf<VolvoModel>(VolvoModel("XC60", "智雅", "LYVXFEFEXNL754427"))
+        binding.edtSendTo.adapter = ArrayAdapter<String>(requireContext(),
+            android.R.layout.simple_dropdown_item_1line, android.R.id.text1, sendToArray.stream().map { it -> "${it.version} ${it.model} ${it.num}" }.toList())
+        binding.edtSendTo.onItemSelectedListener = object: OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                obtainMessageViewModel.getMessageLiveData().value?.toWho = sendToArray[p2]
+                obtainMessageViewModel.getMessageLiveData().value?.toWho = sendToArray[p2].num
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -242,14 +249,14 @@ class ObtainMessageFragment : Fragment() {
                             return
                         }
                         // 开始启动拍照界面
-                        photoHelper.setCrop(true).takePhoto(activity!!)
+                        photoHelper.setCrop(true).takePhoto(requireActivity())
                     }
 
                     override fun onDenied(permissions: MutableList<String>, never: Boolean) {
                         if (never) {
                             Toast.makeText(activity, "永久拒绝授权,请手动授权拍照权限", Toast.LENGTH_SHORT).show()
                             // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                            XXPermissions.startPermissionActivity(context!!, permissions)
+                            XXPermissions.startPermissionActivity(requireContext(), permissions)
                         } else {
                             onCameraDenied()
                             showRationaleForCamera(permissions)
@@ -260,13 +267,56 @@ class ObtainMessageFragment : Fragment() {
         }
 
         binding.btnStartPhoto.setOnClickListener {
-            photoHelper.setCrop(true).selectPhoto(activity!!)
+            photoHelper.setCrop(true).selectPhoto(requireActivity())
         }
 
         // 用户选择录音文件
         binding.btnSelectSound.setOnClickListener {
-            photoHelper.setCrop(false).selectAudio(activity!!)
-//            SingleAudioPicker.showPicker(context!!) {
+//            photoHelper.setCrop(false).selectAudio(requireActivity())
+
+            showFilePicker(
+                submitText = "确认",
+                fileType = FileType.AUDIO,
+                title = "选择音频文件",
+                cancellable = true,
+                listDirection = ListDirection.RTL,
+                accentColor = ContextCompat.getColor(requireContext(), R.color.purple_700),
+                titleTextColor = ContextCompat.getColor(requireContext(), R.color.purple_700),
+                onSubmitClickListener = object : OnSubmitClickListener {
+                    override fun onClick(files: List<Media>) {
+                        // Do something here with selected files
+                        val audioFile = files.get(0).file
+                        if (!audioFile.parentFile.parentFile.absolutePath.equals(SystemConstant.SoundFolder)) {
+                            val copyResult = FileIOUtils.writeFileFromIS(File(SystemConstant.SoundFolder, audioFile.name), FileInputStream(audioFile))
+                            XLog.e("拷贝结果："+copyResult)
+                            if (!copyResult) {
+                                ToastUtils.showToast("无法访问该文件，请重新选择其他文件")
+                                return
+                            }
+                            obtainMessageViewModel.updateMessageAudio(File(SystemConstant.SoundFolder, audioFile.name).absolutePath)
+                        } else {
+                            obtainMessageViewModel.updateMessageAudio(audioFile.absolutePath)
+                        }
+                    }
+                },
+                onItemClickListener = object : OnItemClickListener {
+                    override fun onClick(media: Media, position: Int, adapter: FilePickerAdapter) {
+                        if (!media.file.isDirectory) {
+                            if (!media.file.name.endsWith(".m4a")) {
+                                ToastUtils.showToast("只能选择.m4a文件")
+                                return
+                            }
+                            if (media.file.length()>2*1000*1000) {
+                                ToastUtils.showToast("文件不能超过2M！")
+                                return
+                            }
+                            adapter.setSelected(position)
+                        }
+                    }
+                }
+            )
+
+//            SingleAudioPicker.showPicker(requireContext()) {
 //                val audioFile = File(it.contentUri.path)
 //                ToastUtils.showToast(audioFile.absolutePath)
 //                if (!audioFile.parentFile.parentFile.absolutePath.equals(SystemConstant.SoundFolder)) {
@@ -295,12 +345,16 @@ class ObtainMessageFragment : Fragment() {
                             MotionEvent.ACTION_DOWN -> {
                                 // 申请权限
                                 recorderLifecycleObserver.initAndStartRecorder()
-                                ToastUtils.showToast("开始录音！")
+                                startRecordTime = System.currentTimeMillis()
                                 false
                             }
                             MotionEvent.ACTION_UP -> {
-                                val recorderAudioPath =
+                                if (System.currentTimeMillis() - startRecordTime<2000) {
+                                    ToastUtils.showToast("录音时间太短！")
                                     recorderLifecycleObserver.stopAndReleaseRecorder()
+                                    return
+                                }
+                                val recorderAudioPath = recorderLifecycleObserver.stopAndReleaseRecorder()
                                 if (File(recorderAudioPath).exists()) {
                                     obtainMessageViewModel.updateMessageAudio(recorderAudioPath)
                                 }
@@ -316,7 +370,7 @@ class ObtainMessageFragment : Fragment() {
                         if (never) {
                             Toast.makeText(activity, "永久拒绝授权,请手动授权拍照权限", Toast.LENGTH_SHORT).show()
                             // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                            XXPermissions.startPermissionActivity(context!!, permissions)
+                            XXPermissions.startPermissionActivity(requireContext(), permissions)
                         } else {
                             onCameraDenied()
                             showRationaleForCamera(permissions)
@@ -531,7 +585,7 @@ class ObtainMessageFragment : Fragment() {
                     localAttachmentList.add(audioAttachment)
                 }
                 if (localAttachmentList.isNotEmpty()) {
-                    MaterialAlertDialogBuilder(context!!)
+                    MaterialAlertDialogBuilder(requireContext())
                         .setTitle("提示")
                         .setMessage("当前照片及音频内容需首先上传，是否尝试上传?")
                         .setPositiveButton(
@@ -558,10 +612,13 @@ class ObtainMessageFragment : Fragment() {
                 val sendDate = DateUtils.str2Date(messageData?.sendDate, dateSendFormat)
                 val cal = Calendar.getInstance()
                 cal.time = Date()
-                cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + 1)
-                if (cal.time.time < sendDate.time) { // 发送时间设置小于当前时间1分钟前，Toast提示用户并自动设置发送时间
+                cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE)+1)
+                if (sendDate.time < cal.time.time) { // 发送时间设置小于当前时间1分钟后，Toast提示用户并自动设置发送时间
                     messageData?.sendDate = DateUtils.date2Str(cal.time, dateSendFormat)
                     ToastUtils.showToast("自动调整发送时间为1分钟后发送")
+                    messageData.version = "1" // 立即发送
+                } else {
+                    messageData.version = "0" // 预约发送
                 }
 
                 // 开始网络提交数据
@@ -610,12 +667,12 @@ class ObtainMessageFragment : Fragment() {
     fun showRationaleForCamera(permissions: MutableList<String>) {
 //        showRationaleDialog(R.string.permission_camera_rationale, request)
 //        Toast.makeText(context, "当前操作需要您授权相机权限！", Toast.LENGTH_SHORT).show()
-        MaterialAlertDialogBuilder(context!!)
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle("提示")
             .setMessage("当前操作需要您授权拍摄权限！")
             .setPositiveButton("确定", DialogInterface.OnClickListener { dialogInterface, i ->
                 dialogInterface.dismiss()
-                XXPermissions.startPermissionActivity(activity!!, permissions)
+                XXPermissions.startPermissionActivity(requireActivity(), permissions)
             })
             .show()
     }
@@ -626,16 +683,15 @@ class ObtainMessageFragment : Fragment() {
     }
 
     fun showRationaleForRecorder(permissions: MutableList<String>) {
-        MaterialAlertDialogBuilder(context!!)
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle("提示")
             .setMessage("当前操作需要您授权录音权限！")
             .setPositiveButton("确定", DialogInterface.OnClickListener { dialogInterface, i ->
                 dialogInterface.dismiss()
-                XXPermissions.startPermissionActivity(activity!!, permissions)
+                XXPermissions.startPermissionActivity(requireActivity(), permissions)
             })
             .show()
     }
-
     fun onRecorderDenied() {
         ToastUtils.showToast("当前操作需要您授权录音权限！")
     }

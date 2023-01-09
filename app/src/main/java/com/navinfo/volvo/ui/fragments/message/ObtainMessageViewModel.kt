@@ -177,6 +177,7 @@ class ObtainMessageViewModel @Inject constructor(
                     }
                 } else {
                     ToastUtils.showToast(result.msg)
+                    XLog.d(result.msg)
                 }
             } catch (e: Exception) {
                 ToastUtils.showToast(e.message)
@@ -250,7 +251,8 @@ class ObtainMessageViewModel @Inject constructor(
                     "mediaUrl" to message?.mediaUrl,
                     "who" to message?.who,
                     "toWho" to message?.toWho,
-                    "sendDate" to message?.sendDate
+                    "sendDate" to message?.sendDate,
+                    "version" to message?.version
                 )
                 val result =
                     NavinfoVolvoCall.getApi().insertCardByApp(insertData as Map<String, String>)
@@ -283,7 +285,8 @@ class ObtainMessageViewModel @Inject constructor(
                     "mediaUrl" to message?.mediaUrl,
                     "who" to message?.who,
                     "toWho" to message?.toWho,
-                    "sendDate" to message?.sendDate
+                    "sendDate" to message?.sendDate,
+                    "version" to message?.version
                 )
                 val result =
                     NavinfoVolvoCall.getApi().updateCardByApp(updateData as Map<String, String>)
