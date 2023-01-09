@@ -1,10 +1,12 @@
 package com.navinfo.volvo.ui
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -28,20 +30,23 @@ import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import com.navinfo.volvo.R
 import com.navinfo.volvo.databinding.ActivityMainBinding
+import com.navinfo.volvo.ui.message.MessageActivity
 import com.navinfo.volvo.utils.SystemConstant
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private val viewModel by viewModels<MainActivityViewModel> { viewModelFactoryProvider }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setupNavigation()
+
 
         XXPermissions.with(this)
             // 申请单个权限
@@ -61,6 +66,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     // 在SD卡创建项目目录
                     createRootFolder()
+                    setupNavigation()
                 }
 
                 override fun onDenied(permissions: MutableList<String>, never: Boolean) {
@@ -84,16 +90,29 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_message, R.id.navigation_dashboard, R.id.navigation_notifications,
+                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications,
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        lifecycleScope.launch {
+            viewModel.getUnreadCount().collect {
+                runOnUiThread {
+                    if (it == 0L) {
+                        navView.removeBadge(R.id.navigation_home)
+                    } else {
+                        var badge = navView.getOrCreateBadge(R.id.navigation_home);
+                        badge.number = it.toInt()
+                    }
+                }
+            }
+        }
+
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
-            if (destination.id == R.id.navigation_message
+            if (destination.id == R.id.navigation_home
                 || destination.id == R.id.navigation_dashboard
                 || destination.id == R.id.navigation_notifications
-                || destination.id == R.id.navigation_obtain_message
             ) {
                 runOnUiThread {
                     navView.visibility = View.VISIBLE
@@ -105,6 +124,11 @@ class MainActivity : AppCompatActivity() {
                     newMessageView.visibility = View.GONE
                 }
             }
+        }
+        binding.newMessageFab.setOnClickListener {
+//            val intent: Intent = Intent(this@MainActivity, MessageActivity::class.java)
+//            startActivity(intent)
+            navController.navigate(R.id.navigation_obtain_message)
         }
     }
 

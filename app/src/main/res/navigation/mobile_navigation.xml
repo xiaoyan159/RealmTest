@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_login_to_home"
-            app:destination="@id/navigation_message"
+            app:destination="@id/navigation_home"
             app:enterAnim="@anim/from_left"
             app:exitAnim="@anim/to_right"
             app:popEnterAnim="@anim/from_right"
@@ -21,8 +21,8 @@
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
-        android:id="@+id/navigation_message"
-        android:name="com.navinfo.volvo.ui.fragments.home.MessageFragment"
+        android:id="@+id/navigation_home"
+        android:name="com.navinfo.volvo.ui.fragments.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home"></fragment>
 
@@ -48,5 +48,16 @@
         android:id="@+id/navigation_obtain_message"
         android:name="com.navinfo.volvo.ui.fragments.message.ObtainMessageFragment"
         android:label="问候编辑"
-        tools:layout="@layout/fragment_obtain_message" />
+        tools:layout="@layout/fragment_obtain_message" >
+        <action
+            android:id="@+id/action_login_to_home"
+            app:destination="@id/navigation_home"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left"
+            app:popUpTo="@id/navigation_obtain_message"
+            app:popUpToInclusive="true" />
+    </fragment>
+
 </navigation>

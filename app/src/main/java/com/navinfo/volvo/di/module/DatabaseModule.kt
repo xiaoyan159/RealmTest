@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.navinfo.volvo.database.AppDatabase
 import com.navinfo.volvo.database.dao.GreetingMessageDao
 import com.navinfo.volvo.database.dao.UserDao
+import com.navinfo.volvo.utils.SystemConstant
 import com.tencent.wcdb.database.SQLiteCipherSpec
 import com.tencent.wcdb.room.db.WCDBOpenHelperFactory
 import dagger.Module
@@ -31,7 +32,7 @@ class DatabaseModule {
             .writeAheadLoggingEnabled(true)       // enable WAL mode, remove if not needed
             .asyncCheckpointEnabled(true);            // enable asynchronous checkpoint, remove if not needed
 
-        return Room.databaseBuilder(context, AppDatabase::class.java, "NavinfoVolvoDb")
+        return Room.databaseBuilder(context, AppDatabase::class.java, "${SystemConstant.ROOT_PATH}/NavinfoVolvoDb.db")
 
             // [WCDB] Specify open helper to use WCDB database implementation instead
             // of the Android framework.

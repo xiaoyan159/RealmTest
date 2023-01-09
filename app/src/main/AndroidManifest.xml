@@ -23,7 +23,7 @@
         android:configChanges="locale"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/volvo_logo_small"
         android:requestLegacyExternalStorage="true"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -34,6 +34,7 @@
             android:name=".ui.message.MessageActivity"
             android:exported="false"
             android:label="@string/title_activity_second"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.NavinfoVolvo.NoActionBar">
             <meta-data
                 android:name="android.app.lib_name"

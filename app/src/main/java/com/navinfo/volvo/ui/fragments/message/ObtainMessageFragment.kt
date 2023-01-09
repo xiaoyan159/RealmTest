@@ -2,7 +2,6 @@ package com.navinfo.volvo.ui.fragments.message
 
 import android.content.DialogInterface
 import android.graphics.Paint
-import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -17,18 +16,13 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.easytools.tools.DateUtils
-import com.easytools.tools.DeviceUtils
 import com.easytools.tools.DisplayUtils
 import com.easytools.tools.FileIOUtils
-import com.easytools.tools.FileUtils
 import com.easytools.tools.ResourceUtils
 import com.easytools.tools.ToastUtils
 import com.elvishew.xlog.XLog
@@ -51,6 +45,7 @@ import com.navinfo.volvo.database.entity.AttachmentType
 import com.navinfo.volvo.database.entity.GreetingMessage
 import com.navinfo.volvo.databinding.FragmentObtainMessageBinding
 import com.navinfo.volvo.http.DownloadCallback
+import com.navinfo.volvo.model.VolvoModel
 import com.navinfo.volvo.ui.markRequiredInRed
 import com.navinfo.volvo.util.PhotoLoader
 import com.navinfo.volvo.utils.EasyMediaFile
@@ -62,8 +57,8 @@ import top.zibin.luban.Luban
 import top.zibin.luban.OnCompressListener
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.util.*
+import kotlin.streams.toList
 
 
 //@RuntimePermissions
@@ -81,6 +76,7 @@ class ObtainMessageFragment: Fragment() {
 
     private val dateSendFormat = "yyyy-MM-dd HH:mm:ss"
     private val dateShowFormat = "yyyy-MM-dd HH:mm"
+    private var startRecordTime = System.currentTimeMillis()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -186,13 +182,12 @@ class ObtainMessageFragment: Fragment() {
         binding.imgAudioDelete.setOnClickListener {
             obtainMessageViewModel.updateMessageAudio("")
         }
-
-        val sendToArray = mutableListOf<String>("绑定车辆1(LYVXFEFEXNL754427)")
+        val sendToArray = mutableListOf<VolvoModel>(VolvoModel("XC60", "智雅", "LYVXFEFEXNL754427"))
         binding.edtSendTo.adapter = ArrayAdapter<String>(requireContext(),
-            android.R.layout.simple_dropdown_item_1line, android.R.id.text1, sendToArray)
+            android.R.layout.simple_dropdown_item_1line, android.R.id.text1, sendToArray.stream().map { it -> "${it.version} ${it.model} ${it.num}" }.toList())
         binding.edtSendTo.onItemSelectedListener = object: OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                obtainMessageViewModel.getMessageLiveData().value?.toWho = sendToArray[p2]
+                obtainMessageViewModel.getMessageLiveData().value?.toWho = sendToArray[p2].num
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -326,10 +321,15 @@ class ObtainMessageFragment: Fragment() {
                             MotionEvent.ACTION_DOWN-> {
                                 // 申请权限
                                 recorderLifecycleObserver.initAndStartRecorder()
-                                ToastUtils.showToast("开始录音！")
+                                startRecordTime = System.currentTimeMillis()
                                 false
                             }
                             MotionEvent.ACTION_UP -> {
+                                if (System.currentTimeMillis() - startRecordTime<2000) {
+                                    ToastUtils.showToast("录音时间太短！")
+                                    recorderLifecycleObserver.stopAndReleaseRecorder()
+                                    return
+                                }
                                 val recorderAudioPath = recorderLifecycleObserver.stopAndReleaseRecorder()
                                 if (File(recorderAudioPath).exists()) {
                                     obtainMessageViewModel.updateMessageAudio(recorderAudioPath)
@@ -556,9 +556,12 @@ class ObtainMessageFragment: Fragment() {
                 val cal = Calendar.getInstance()
                 cal.time = Date()
                 cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE)+1)
-                if (cal.time.time < sendDate.time) { // 发送时间设置小于当前时间1分钟前，Toast提示用户并自动设置发送时间
+                if (sendDate.time < cal.time.time) { // 发送时间设置小于当前时间1分钟后，Toast提示用户并自动设置发送时间
                     messageData?.sendDate = DateUtils.date2Str(cal.time, dateSendFormat)
                     ToastUtils.showToast("自动调整发送时间为1分钟后发送")
+                    messageData.version = "1" // 立即发送
+                } else {
+                    messageData.version = "0" // 预约发送
                 }
 
                 // 开始网络提交数据
@@ -588,6 +591,7 @@ class ObtainMessageFragment: Fragment() {
 
     val confirmCallback = object: ObtainMessageViewModel.MyConfirmCallback {
         override fun onSucess() {
+            findNavController().navigate(R.id.navigation_home)
         }
     }
 

@@ -23,9 +23,10 @@ import okhttp3.RequestBody
 import java.io.File
 import java.io.FileInputStream
 import java.util.*
+import javax.inject.Inject
 
 
-class ObtainMessageViewModel: ViewModel() {
+class ObtainMessageViewModel @Inject constructor(): ViewModel() {
     private val msgLiveData: MutableLiveData<GreetingMessage> by lazy {
         MutableLiveData<GreetingMessage>()
     }
@@ -232,7 +233,8 @@ class ObtainMessageViewModel: ViewModel() {
                     "mediaUrl" to message?.mediaUrl,
                     "who" to message?.who,
                     "toWho" to message?.toWho,
-                    "sendDate" to message?.sendDate
+                    "sendDate" to message?.sendDate,
+                    "version" to message?.version
                 )
                 val result = NavinfoVolvoCall.getApi().insertCardByApp(insertData as Map<String, String>)
                 XLog.d("insertCardByApp:${result.code}")
@@ -264,7 +266,8 @@ class ObtainMessageViewModel: ViewModel() {
                     "mediaUrl" to message?.mediaUrl,
                     "who" to message?.who,
                     "toWho" to message?.toWho,
-                    "sendDate" to message?.sendDate
+                    "sendDate" to message?.sendDate,
+                    "version" to message?.version
                 )
                 val result = NavinfoVolvoCall.getApi().updateCardByApp(updateData as Map<String, String>)
                 XLog.d("updateCardByApp:${result.code}")

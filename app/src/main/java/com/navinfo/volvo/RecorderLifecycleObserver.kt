@@ -10,7 +10,7 @@ import java.util.*
 
 class RecorderLifecycleObserver: DefaultLifecycleObserver {
     private var mediaRecorder: MediaRecorder? = null
-    private lateinit var recorderAudioPath: String
+    private var recorderAudioPath: String = "${SystemConstant.SoundFolder}/${DateUtils.date2Str(Date(), DateUtils.FORMAT_YMDHMS)}.m4a"
 
     fun initAndStartRecorder() {
         recorderAudioPath = "${SystemConstant.SoundFolder}/${DateUtils.date2Str(Date(), DateUtils.FORMAT_YMDHMS)}.m4a"
@@ -22,17 +22,22 @@ class RecorderLifecycleObserver: DefaultLifecycleObserver {
             setOutputFile(recorderAudioPath)
             try {
                 prepare()
+                start()
             } catch (e: Exception) {
                 XLog.e("prepare() failed")
             }
-            start()
         }
     }
 
     fun stopAndReleaseRecorder(): String {
-        mediaRecorder?.stop()
-        mediaRecorder?.release()
-        mediaRecorder = null
+        try {
+            mediaRecorder?.stop()
+        } catch (exception: Exception) {
+            XLog.e(exception.message)
+        } finally {
+            mediaRecorder?.release()
+            mediaRecorder = null
+        }
         return recorderAudioPath
     }
 
