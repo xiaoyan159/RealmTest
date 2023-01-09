@@ -6,14 +6,13 @@
     <data>
         <variable
             name="loginUser"
-            type="com.navinfo.volvo.model.LoginUser" />
+            type="com.navinfo.volvo.model.proto.LoginUser" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.navinfo.volvo.ui.fragments.login.LoginFragment">
-
 
         <androidx.constraintlayout.utils.widget.ImageFilterView
             android:id="@+id/login_fragment_logo"
@@ -40,9 +39,10 @@
             app:layout_constraintVertical_bias="0.4">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/login_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{loginUser.name}"
+                android:text="@{loginUser.username}"
                 android:hint="请输入用户名" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -54,6 +54,7 @@
             app:layout_constraintTop_toBottomOf="@id/login_fragment_user_layout">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/login_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"

@@ -1,8 +1,8 @@
 package com.navinfo.volvo.ui
 
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -11,6 +11,9 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.transition.Slide
+import androidx.transition.Transition
+import androidx.transition.TransitionManager
 import com.easytools.tools.FileUtils
 import com.elvishew.xlog.BuildConfig
 import com.elvishew.xlog.LogConfiguration
@@ -30,23 +33,23 @@ import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import com.navinfo.volvo.R
 import com.navinfo.volvo.databinding.ActivityMainBinding
-import com.navinfo.volvo.ui.message.MessageActivity
 import com.navinfo.volvo.utils.SystemConstant
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val viewModel by viewModels<MainActivityViewModel> { viewModelFactoryProvider }
+    private val viewModel by viewModels<MainActivityViewModel>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
         XXPermissions.with(this)
             // 申请单个权限
@@ -98,28 +101,29 @@ class MainActivity : BaseActivity() {
 
         lifecycleScope.launch {
             viewModel.getUnreadCount().collect {
-                runOnUiThread {
-                    if (it == 0L) {
-                        navView.removeBadge(R.id.navigation_home)
-                    } else {
-                        var badge = navView.getOrCreateBadge(R.id.navigation_home);
-                        badge.number = it.toInt()
-                    }
+                if (it == 0L) {
+                    navView.removeBadge(R.id.navigation_home)
+                } else {
+                    var badge = navView.getOrCreateBadge(R.id.navigation_home);
+                    badge.number = it.toInt()
                 }
             }
         }
 
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
-            if (destination.id == R.id.navigation_home
-                || destination.id == R.id.navigation_dashboard
-                || destination.id == R.id.navigation_notifications
-            ) {
+            if (destination.id == R.id.navigation_home || destination.id == R.id.navigation_dashboard || destination.id == R.id.navigation_notifications) {
                 runOnUiThread {
+                    val transition: Transition = Slide(Gravity.BOTTOM)
+                    transition.duration = 300;
+                    TransitionManager.beginDelayedTransition(binding.root, transition);
                     navView.visibility = View.VISIBLE
                     newMessageView.visibility = View.VISIBLE
                 }
             } else {
                 runOnUiThread {
+                    val transition: Transition = Slide(Gravity.BOTTOM)
+                    transition.duration = 300;
+                    TransitionManager.beginDelayedTransition(binding.root, transition);
                     navView.visibility = View.GONE
                     newMessageView.visibility = View.GONE
                 }
@@ -131,6 +135,7 @@ class MainActivity : BaseActivity() {
             navController.navigate(R.id.navigation_obtain_message)
         }
     }
+
 
     override fun onSupportNavigateUp() =
         findNavController(R.id.nav_host_fragment_activity_main).navigateUp()
@@ -151,13 +156,10 @@ class MainActivity : BaseActivity() {
     }
 
     fun xLogInit(logFolder: String) {
-        val config = LogConfiguration.Builder()
-            .logLevel(
-                if (BuildConfig.DEBUG)
-                    LogLevel.ALL // 指定日志级别，低于该级别的日志将不会被打印，默认为 LogLevel.ALL
-                else LogLevel.NONE
-            )
-            .tag("Volvo") // 指定 TAG，默认为 "X-LOG"
+        val config = LogConfiguration.Builder().logLevel(
+            if (BuildConfig.DEBUG) LogLevel.ALL // 指定日志级别，低于该级别的日志将不会被打印，默认为 LogLevel.ALL
+            else LogLevel.NONE
+        ).tag("Volvo") // 指定 TAG，默认为 "X-LOG"
             .enableThreadInfo() // 允许打印线程信息，默认禁止
             .enableStackTrace(2) // 允许打印深度为 2 的调用栈信息，默认禁止
             .enableBorder() // 允许打印日志边框，默认禁止
@@ -165,8 +167,7 @@ class MainActivity : BaseActivity() {
                 BlacklistTagsFilterInterceptor( // 添加黑名单 TAG 过滤器
                     "blacklist1", "blacklist2", "blacklist3"
                 )
-            )
-            .build()
+            ).build()
 
         val androidPrinter: Printer = AndroidPrinter(true) // 通过 android.util.Log 打印日志的打印器
 
@@ -181,8 +182,7 @@ class MainActivity : BaseActivity() {
         XLog.init( // 初始化 XLog
             config,  // 指定日志配置，如果不指定，会默认使用 new LogConfiguration.Builder().build()
             androidPrinter,  // 添加任意多的打印器。如果没有添加任何打印器，会默认使用 AndroidPrinter(Android)/ConsolePrinter(java)
-            consolePrinter,
-            filePrinter
+            consolePrinter, filePrinter
         )
     }
 
@@ -190,14 +190,11 @@ class MainActivity : BaseActivity() {
     fun showRationaleForSDCard(permissions: MutableList<String>) {
 //        showRationaleDialog(R.string.permission_camera_rationale, request)
 //        Toast.makeText(context, "当前操作需要您授权相机权限！", Toast.LENGTH_SHORT).show()
-        MaterialAlertDialogBuilder(this)
-            .setTitle("提示")
-            .setMessage("当前操作需要您授权读写SD卡权限！")
+        MaterialAlertDialogBuilder(this).setTitle("提示").setMessage("当前操作需要您授权读写SD卡权限！")
             .setPositiveButton("确定", DialogInterface.OnClickListener { dialogInterface, i ->
                 dialogInterface.dismiss()
                 XXPermissions.startPermissionActivity(this@MainActivity, permissions)
-            })
-            .show()
+            }).show()
     }
 
     //    @OnPermissionDenied(Manifest.permission.MANAGE_EXTERNAL_STORAGE)

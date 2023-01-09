@@ -19,23 +19,11 @@ class HomeAdapter(fragment: Fragment) :
     PagingDataAdapter<GreetingMessage, HomeAdapter.MyViewHolder>(DiffCallback()) {
 
     val fragment = fragment
-//    var itemList = ArrayList<GreetingMessage>()
-//
-//    fun addItem(message: GreetingMessage) {
-//        itemList.add(message)
-//        notifyItemInserted(itemList.size - 1)
-//    }
-//
-//    fun setItems(messageList: List<GreetingMessage>) {
-//        itemList.clear()
-//        itemList.addAll(messageList)
-//        notifyDataSetChanged()
-//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val mDataBinding: AdapterHomeBinding =
             DataBindingUtil.inflate(
-                LayoutInflater.from(fragment.context),
+                LayoutInflater.from(parent.context),
                 R.layout.adapter_home,
                 parent,
                 false
@@ -47,9 +35,10 @@ class HomeAdapter(fragment: Fragment) :
         holder.onBind(position)
     }
 
-//    override fun getItemCount(): Int {
-//        return itemList.size
-//    }
+    fun getItemData(position: Int): GreetingMessage {
+        return getItem(position)!!
+    }
+
 
     inner class MyViewHolder(private val mDataBinding: AdapterHomeBinding) :
         RecyclerView.ViewHolder(mDataBinding.root) {
@@ -63,7 +52,6 @@ class HomeAdapter(fragment: Fragment) :
                 .error(R.mipmap.volvo_logo_small)
                 .into(mDataBinding.messageHeadIcon)
         }
-
     }
 
     class DiffCallback : DiffUtil.ItemCallback<GreetingMessage>() {

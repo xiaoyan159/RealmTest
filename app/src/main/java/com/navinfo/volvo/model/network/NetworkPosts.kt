@@ -1,4 +1,4 @@
-package com.navinfo.volvo.model.messagelist
+package com.navinfo.volvo.model.network
 
 data class NetworkMessageListPost(
     val name: String,//问候名称，非必填项
@@ -13,3 +13,7 @@ data class NetworkMessageListPost(
 
     }
 }
+
+data class NetworkDeleteMessagePost(
+    val id: Long
+)

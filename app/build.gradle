@@ -2,9 +2,10 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-android'
-    id 'kotlin-parcelize'
+    id 'kotlin-parcelize' // 序列化
     id 'kotlin-kapt'
-    id 'dagger.hilt.android.plugin'
+    id 'dagger.hilt.android.plugin' //hilt 依赖注入
+    id "com.google.protobuf" version "0.8.17" //Proto DataStore 插件
 //    id 'com.google.dagger.hilt.android'
 }
 
@@ -82,7 +83,7 @@ dependencies {
 
     //room 数据库相关
     implementation 'com.tencent.wcdb:room:1.1-19'  // 代替 room-runtime，同时也不需要再引用 wcdb-android
-    api 'androidx.sqlite:sqlite:2.2.0'
+    implementation 'androidx.sqlite:sqlite-ktx:2.2.0'
     implementation 'androidx.room:room-runtime:2.4.3'
     implementation 'androidx.room:room-ktx:2.4.3'
     annotationProcessor 'androidx.room:room-compiler:2.4.3'
@@ -90,13 +91,12 @@ dependencies {
     kapt 'android.arch.persistence.room:compiler:1.1.1'// compiler 需要用 room 的
     kapt 'androidx.room:room-compiler:2.4.3'
     kapt 'androidx.room:room-ktx:2.4.3'
+
     //分页加载
     implementation "androidx.room:room-paging:2.4.3"
     implementation "androidx.paging:paging-runtime-ktx:3.1.1"
 
     androidTestImplementation "android.arch.persistence.room:testing:1.1.1"
-//    implementation "android.arch.lifecycle:extensions:1.1.1"
-//    annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
     implementation 'com.tencent.wcdb:wcdb-android:1.1-19'
 
 
@@ -107,29 +107,20 @@ dependencies {
 
     //带侧滑的自定义列表
     implementation 'com.yanzhenjie.recyclerview:x:1.3.2'
-//    implementation 'androidx.appcompat:appcompat:1.5.1'
-
-//    // Koin
-//    implementation("io.insert-koin:koin-android:3.3.2")
-//    implementation("io.insert-koin:koin-core:3.3.2")
+    //下拉刷新，上拉加载
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
     // Retrofit 网络请求相关
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-//    const val chuck = "com.readystatesoftware.chuck:library:${Versions.chuck}"
-//    const val chuckNoOp = "com.readystatesoftware.chuck:library-no-op:${Versions.chuck}"
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
     implementation("com.google.code.gson:gson:2.8.6")
 
-
     //hilt
     implementation "com.google.dagger:hilt-android:2.41"
     kapt "com.google.dagger:hilt-compiler:2.41"
-//    implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
-//    androidTestImplementation "com.google.dagger:hilt-android-testing:2.41"
-//    kaptAndroidTest "com.google.dagger:hilt-android-compiler:2.41"
 
     // 显示错误提示 https://github.com/nhaarman/supertooltips
     implementation 'com.nhaarman.supertooltips:library:3.0.0'
@@ -153,6 +144,31 @@ dependencies {
     implementation 'com.github.JagarYousef:ChatVoicePlayer:1.1.0'
     // 图片查看器 https://github.com/XiaoGe-1996/ImageViewer
     implementation 'com.github.XiaoGe-1996:ImageViewer:v1.0.0'
+
+    // 数据存储 Preferences DataStore 键值对
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+    // 数据存储 Proto DataStore 对象
+    implementation "androidx.datastore:datastore-core:1.0.0"
+    implementation  "com.google.protobuf:protobuf-javalite:3.18.0"
+}
+
+//Proto DataStore 数据存储插件
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.14.0"
+    }
+    // Generates the java Protobuf-lite code for the Protobufs in this project. See
+    // https://github.com/google/protobuf-gradle-plugin#customizing-protobuf-compilation
+    // for more information.
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option 'lite'
+                }
+            }
+        }
+    }
 }
 
 kapt {
