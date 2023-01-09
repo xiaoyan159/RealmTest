@@ -27,13 +27,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ObtainMessageViewModel @Inject constructor(
-    private val pre: PreferencesRepository
+    private val pre: PreferencesRepository,
 ) : ViewModel() {
     private val msgLiveData: MutableLiveData<GreetingMessage> by lazy {
         MutableLiveData<GreetingMessage>()
     }
 
-    lateinit var username: String
+    var username: String = ""
 
     init {
         viewModelScope.launch {

@@ -7,7 +7,8 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
@@ -18,17 +19,9 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
-import com.easytools.tools.DateUtils
-import com.easytools.tools.DisplayUtils
-import com.easytools.tools.FileIOUtils
-import com.easytools.tools.ResourceUtils
-import com.easytools.tools.ThreadPoolUtils.runOnUiThread
-import com.easytools.tools.ToastUtils
+import com.easytools.tools.*
 import com.elvishew.xlog.XLog
 import com.github.file_picker.FileType
 import com.github.file_picker.ListDirection
@@ -58,7 +51,6 @@ import com.nhaarman.supertooltips.ToolTip
 import dagger.hilt.android.AndroidEntryPoint
 import indi.liyi.viewer.Utils
 import indi.liyi.viewer.ViewData
-import kotlinx.coroutines.launch
 import top.zibin.luban.Luban
 import top.zibin.luban.OnCompressListener
 import java.io.File
@@ -196,8 +188,11 @@ class ObtainMessageFragment : Fragment() {
         }
         val sendToArray = mutableListOf<VolvoModel>(VolvoModel("XC60", "智雅", "LYVXFEFEXNL754427"))
         binding.edtSendTo.adapter = ArrayAdapter<String>(requireContext(),
-            android.R.layout.simple_dropdown_item_1line, android.R.id.text1, sendToArray.stream().map { it -> "${it.version} ${it.model} ${it.num}" }.toList())
-        binding.edtSendTo.onItemSelectedListener = object: OnItemSelectedListener {
+            android.R.layout.simple_dropdown_item_1line,
+            android.R.id.text1,
+            sendToArray.stream().map { it -> "${it.version} ${it.model} ${it.num}" }.toList()
+        )
+        binding.edtSendTo.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 obtainMessageViewModel.getMessageLiveData().value?.toWho = sendToArray[p2].num
             }
@@ -287,13 +282,23 @@ class ObtainMessageFragment : Fragment() {
                         // Do something here with selected files
                         val audioFile = files.get(0).file
                         if (!audioFile.parentFile.parentFile.absolutePath.equals(SystemConstant.SoundFolder)) {
-                            val copyResult = FileIOUtils.writeFileFromIS(File(SystemConstant.SoundFolder, audioFile.name), FileInputStream(audioFile))
-                            XLog.e("拷贝结果："+copyResult)
+                            val copyResult = FileIOUtils.writeFileFromIS(
+                                File(
+                                    SystemConstant.SoundFolder,
+                                    audioFile.name
+                                ), FileInputStream(audioFile)
+                            )
+                            XLog.e("拷贝结果：" + copyResult)
                             if (!copyResult) {
                                 ToastUtils.showToast("无法访问该文件，请重新选择其他文件")
                                 return
                             }
-                            obtainMessageViewModel.updateMessageAudio(File(SystemConstant.SoundFolder, audioFile.name).absolutePath)
+                            obtainMessageViewModel.updateMessageAudio(
+                                File(
+                                    SystemConstant.SoundFolder,
+                                    audioFile.name
+                                ).absolutePath
+                            )
                         } else {
                             obtainMessageViewModel.updateMessageAudio(audioFile.absolutePath)
                         }
@@ -306,7 +311,7 @@ class ObtainMessageFragment : Fragment() {
                                 ToastUtils.showToast("只能选择.m4a文件")
                                 return
                             }
-                            if (media.file.length()>2*1000*1000) {
+                            if (media.file.length() > 2 * 1000 * 1000) {
                                 ToastUtils.showToast("文件不能超过2M！")
                                 return
                             }
@@ -349,12 +354,13 @@ class ObtainMessageFragment : Fragment() {
                                 false
                             }
                             MotionEvent.ACTION_UP -> {
-                                if (System.currentTimeMillis() - startRecordTime<2000) {
+                                if (System.currentTimeMillis() - startRecordTime < 2000) {
                                     ToastUtils.showToast("录音时间太短！")
                                     recorderLifecycleObserver.stopAndReleaseRecorder()
                                     return
                                 }
-                                val recorderAudioPath = recorderLifecycleObserver.stopAndReleaseRecorder()
+                                val recorderAudioPath =
+                                    recorderLifecycleObserver.stopAndReleaseRecorder()
                                 if (File(recorderAudioPath).exists()) {
                                     obtainMessageViewModel.updateMessageAudio(recorderAudioPath)
                                 }
@@ -408,25 +414,29 @@ class ObtainMessageFragment : Fragment() {
                                 }
                                 // 如果当前文件不在camera缓存文件夹下，则移动该文件
                                 if (!file!!.parentFile.absolutePath.equals(SystemConstant.CameraFolder)) {
-                                    val copyResult = FileIOUtils.writeFileFromIS(
-                                        File(
-                                            SystemConstant.CameraFolder,
-                                            fileName
-                                        ), FileInputStream(file)
-                                    )
-                                    XLog.e("拷贝结果：" + copyResult)
-                                    // 跳转回原Fragment，展示拍摄的照片
-                                    ViewModelProvider(requireActivity()).get(ObtainMessageViewModel::class.java)
-                                        .updateMessagePic(
+                                    try {
+                                        val copyResult = FileIOUtils.writeFileFromIS(
                                             File(
                                                 SystemConstant.CameraFolder,
                                                 fileName
-                                            ).absolutePath
+                                            ), FileInputStream(file)
                                         )
+                                        XLog.e("拷贝结果：$copyResult")
+                                        // 跳转回原Fragment，展示拍摄的照片
+                                        obtainMessageViewModel
+                                            .updateMessagePic(
+                                                File(
+                                                    SystemConstant.CameraFolder,
+                                                    fileName
+                                                ).absolutePath
+                                            )
+                                    } catch (e: Exception) {
+                                        XLog.e("崩溃：${e.message}")
+                                    }
+
                                 } else {
                                     // 跳转回原Fragment，展示拍摄的照片
-                                    ViewModelProvider(requireActivity()).get(ObtainMessageViewModel::class.java)
-                                        .updateMessagePic(file!!.absolutePath)
+                                    obtainMessageViewModel.updateMessagePic(file!!.absolutePath)
                                 }
                             }
 
@@ -612,7 +622,7 @@ class ObtainMessageFragment : Fragment() {
                 val sendDate = DateUtils.str2Date(messageData?.sendDate, dateSendFormat)
                 val cal = Calendar.getInstance()
                 cal.time = Date()
-                cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE)+1)
+                cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + 1)
                 if (sendDate.time < cal.time.time) { // 发送时间设置小于当前时间1分钟后，Toast提示用户并自动设置发送时间
                     messageData?.sendDate = DateUtils.date2Str(cal.time, dateSendFormat)
                     ToastUtils.showToast("自动调整发送时间为1分钟后发送")
@@ -692,6 +702,7 @@ class ObtainMessageFragment : Fragment() {
             })
             .show()
     }
+
     fun onRecorderDenied() {
         ToastUtils.showToast("当前操作需要您授权录音权限！")
     }

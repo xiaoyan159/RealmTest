@@ -57,7 +57,7 @@ class HomeAdapter(fragment: Fragment) :
 
     class DiffCallback : DiffUtil.ItemCallback<GreetingMessage>() {
         override fun areItemsTheSame(oldItem: GreetingMessage, newItem: GreetingMessage): Boolean {
-            return oldItem.uuid == newItem.uuid
+            return oldItem.uuid == newItem.uuid && oldItem.status == newItem.status
         }
 
         override fun areContentsTheSame(

@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.easytools.tools.ThreadPoolUtils.runOnUiThread
 import com.navinfo.volvo.R
 import com.navinfo.volvo.databinding.FragmentHomeBinding
 import com.navinfo.volvo.databinding.HomeAdapterNotingBinding
@@ -21,6 +22,7 @@ import com.navinfo.volvo.ui.fragments.BaseFragment
 import com.yanzhenjie.recyclerview.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 
 @AndroidEntryPoint
@@ -55,19 +57,19 @@ class HomeFragment : BaseFragment(), OnItemClickListener, OnItemMenuClickListene
         var mSwipeMenuCreator = SwipeMenuCreator { _, rightMenu, _ ->
             //添加菜单自动添加至尾部
             var deleteItem = SwipeMenuItem(context)
-            deleteItem.height = DisplayUtil.dip2px(context!!, 60f)
-            deleteItem.width = DisplayUtil.dip2px(context!!, 80f)
-            deleteItem.background = context!!.getDrawable(R.color.red)
-            deleteItem.text = context!!.getString(R.string.delete)
+            deleteItem.height = DisplayUtil.dip2px(requireContext(), 60f)
+            deleteItem.width = DisplayUtil.dip2px(requireContext(), 80f)
+            deleteItem.background = requireContext().getDrawable(R.color.red)
+            deleteItem.text = requireContext().getString(R.string.delete)
             rightMenu.addMenuItem(deleteItem)
 
             //分享
             var shareItem = SwipeMenuItem(context)
-            shareItem.height = DisplayUtil.dip2px(context!!, 60f)
-            shareItem.width = DisplayUtil.dip2px(context!!, 80f)
-            shareItem.background = context!!.getDrawable(R.color.gray)
-            shareItem.text = context!!.getString(R.string.share)
-            shareItem.setTextColor(R.color.white)
+            shareItem.height = DisplayUtil.dip2px(requireContext(), 60f)
+            shareItem.width = DisplayUtil.dip2px(requireContext(), 80f)
+            shareItem.background = requireContext().getDrawable(R.color.gray)
+            shareItem.text = requireContext().getString(R.string.share)
+            shareItem.setTextColor(requireContext().getColor(R.color.white))
             rightMenu.addMenuItem(shareItem)
         }
         //侧滑按钮
@@ -123,11 +125,14 @@ class HomeFragment : BaseFragment(), OnItemClickListener, OnItemMenuClickListene
         messageAdapter.addLoadStateListener {
             when (it.refresh) {
                 is LoadState.NotLoading -> {
-                    binding.homeRecyclerview.addHeaderView(headBinding!!.root)
+                    if (messageAdapter.itemCount == 0)
+                        binding.homeRecyclerview.addHeaderView(headBinding!!.root)
+                    else{
+                        binding.homeRecyclerview.removeHeaderView(headBinding!!.root)
+                    }
                     Log.d("jingo", "is NotLoading")
                 }
                 is LoadState.Loading -> {
-                    binding.homeRecyclerview.removeHeaderView(headBinding!!.root)
                     Log.d("jingo", "is Loading")
                 }
                 is LoadState.Error -> {

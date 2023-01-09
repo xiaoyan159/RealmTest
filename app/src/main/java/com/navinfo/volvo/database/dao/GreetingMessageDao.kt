@@ -1,7 +1,9 @@
 package com.navinfo.volvo.database.dao
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.room.*
+import com.navinfo.volvo.Constant
 import com.navinfo.volvo.database.entity.GreetingMessage
 import kotlinx.coroutines.flow.Flow
 
@@ -20,7 +22,7 @@ interface GreetingMessageDao {
     /**
      * 未读消息统计
      */
-    @Query("SELECT count(id) FROM GreetingMessage WHERE read = 0")
+    @Query("SELECT count(id) FROM GreetingMessage WHERE status = '${Constant.message_status_late}'")
     fun countUnreadByFlow(): Flow<Long>
 
     /**
@@ -32,8 +34,8 @@ interface GreetingMessageDao {
     /**
      * 检查某条数据是否存在
      */
-    @Query("SELECT id From GreetingMessage WHERE id = :id LIMIT 1")
-    suspend fun getMessageId(id: Long): Long
+    @Query("SELECT uuid From GreetingMessage WHERE id = :id LIMIT 1")
+    suspend fun getMessageId(id: Long): Long?
 
     /**
      *
@@ -41,12 +43,18 @@ interface GreetingMessageDao {
     @Transaction
     suspend fun insertOrUpdate(list: List<GreetingMessage>) {
         for (message in list) {
-            val id = getMessageId(message.id)
-            if (id == 0L) {
-                insert(message)
+            Log.e("jingo", "insertOrUpdate ${message.id}")
+            val uuid = getMessageId(message.id)
+            Log.e("jingo", "insertOrUpdate $uuid")
+            if (uuid == null || uuid == 0L) {
+                Log.e("jingo", "insertOrUpdate start ")
+                val l = insert(message)
+                Log.e("jingo", "insertOrUpdate $l ")
             } else {
+                message.uuid = uuid
                 update(message)
             }
+            Log.e("jingo", "insertOrUpdate end")
         }
     }
 
