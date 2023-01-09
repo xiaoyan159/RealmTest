@@ -35,6 +35,7 @@ class HomeAdapter(fragment: Fragment) :
         holder.onBind(position)
     }
 
+
     fun getItemData(position: Int): GreetingMessage {
         return getItem(position)!!
     }

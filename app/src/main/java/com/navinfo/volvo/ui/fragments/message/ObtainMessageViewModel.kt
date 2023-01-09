@@ -1,34 +1,46 @@
 package com.navinfo.volvo.ui.fragments.message
 
-import android.security.ConfirmationCallback
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.easytools.tools.FileIOUtils
 import com.easytools.tools.FileUtils
 import com.easytools.tools.ToastUtils
 import com.elvishew.xlog.XLog
-import com.navinfo.volvo.database.entity.Attachment
 import com.navinfo.volvo.database.entity.AttachmentType
 import com.navinfo.volvo.database.entity.GreetingMessage
 import com.navinfo.volvo.http.DownloadCallback
 import com.navinfo.volvo.http.DownloadManager
 import com.navinfo.volvo.http.DownloadState
 import com.navinfo.volvo.http.NavinfoVolvoCall
+import com.navinfo.volvo.model.proto.LoginUser
+import com.navinfo.volvo.repository.preferences.PreferencesRepository
 import com.navinfo.volvo.utils.SystemConstant
-import kotlinx.coroutines.flow.Flow
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
 import java.io.FileInputStream
-import java.util.*
 import javax.inject.Inject
 
-
-class ObtainMessageViewModel @Inject constructor(): ViewModel() {
+@HiltViewModel
+class ObtainMessageViewModel @Inject constructor(
+    private val pre: PreferencesRepository
+) : ViewModel() {
     private val msgLiveData: MutableLiveData<GreetingMessage> by lazy {
         MutableLiveData<GreetingMessage>()
+    }
+
+    lateinit var username: String
+
+    init {
+        viewModelScope.launch {
+            pre.loginUser().collect {
+                username = it!!.username
+            }
+        }
     }
 
     fun setCurrentMessage(msg: GreetingMessage) {
@@ -131,7 +143,11 @@ class ObtainMessageViewModel @Inject constructor(): ViewModel() {
             try {
                 val requestFile: RequestBody =
                     RequestBody.create("multipart/form-data".toMediaTypeOrNull(), attachmentFile)
-                val body = MultipartBody.Part.createFormData("picture", attachmentFile.getName(), requestFile)
+                val body = MultipartBody.Part.createFormData(
+                    "picture",
+                    attachmentFile.getName(),
+                    requestFile
+                )
                 val result = NavinfoVolvoCall.getApi().uploadAttachment(body)
                 XLog.d(result.code)
                 if (result.code == 200) { // 请求成功
@@ -144,17 +160,19 @@ class ObtainMessageViewModel @Inject constructor(): ViewModel() {
                         if (destFile.exists()) {
                             FileUtils.deleteFile(destFile)
                         }
-                        val copyResult = FileIOUtils.writeFileFromIS(destFile, FileInputStream(attachmentFile))
-                        XLog.e("拷贝结果："+copyResult)
+                        val copyResult =
+                            FileIOUtils.writeFileFromIS(destFile, FileInputStream(attachmentFile))
+                        XLog.e("拷贝结果：" + copyResult)
                     } else {
                         val destFile = File(SystemConstant.SoundFolder, newFileName)
                         if (destFile.exists()) {
                             FileUtils.deleteFile(destFile)
                         }
-                        val copyResult = FileIOUtils.writeFileFromIS(destFile, FileInputStream(attachmentFile))
-                        XLog.e("拷贝结果："+copyResult)
+                        val copyResult =
+                            FileIOUtils.writeFileFromIS(destFile, FileInputStream(attachmentFile))
+                        XLog.e("拷贝结果：" + copyResult)
                     }
-                    if (fileKey!=null) {
+                    if (fileKey != null) {
                         downloadAttachment(fileKey, attachmentType)
                     }
                 } else {
@@ -178,7 +196,7 @@ class ObtainMessageViewModel @Inject constructor(): ViewModel() {
                 if (result.code == 200) { // 请求成功
                     // 获取上传后的结果
                     val imageUrl = result.data
-                    if (imageUrl!=null) {
+                    if (imageUrl != null) {
                         XLog.d("downloadAttachment-imageUrl:${imageUrl}")
                         // 获取到图片的网络地址
                         if (attachmentType == AttachmentType.PIC) {
@@ -197,7 +215,7 @@ class ObtainMessageViewModel @Inject constructor(): ViewModel() {
         }
     }
 
-    fun downLoadFile(url: String, destFile: File, downloadCallback: DownloadCallback){
+    fun downLoadFile(url: String, destFile: File, downloadCallback: DownloadCallback) {
         viewModelScope.launch {
             DownloadManager.download(
                 url,
@@ -234,7 +252,8 @@ class ObtainMessageViewModel @Inject constructor(): ViewModel() {
                     "toWho" to message?.toWho,
                     "sendDate" to message?.sendDate
                 )
-                val result = NavinfoVolvoCall.getApi().insertCardByApp(insertData as Map<String, String>)
+                val result =
+                    NavinfoVolvoCall.getApi().insertCardByApp(insertData as Map<String, String>)
                 XLog.d("insertCardByApp:${result.code}")
                 if (result.code == 200) { // 请求成功
                     // 获取上传后的结果
@@ -266,7 +285,8 @@ class ObtainMessageViewModel @Inject constructor(): ViewModel() {
                     "toWho" to message?.toWho,
                     "sendDate" to message?.sendDate
                 )
-                val result = NavinfoVolvoCall.getApi().updateCardByApp(updateData as Map<String, String>)
+                val result =
+                    NavinfoVolvoCall.getApi().updateCardByApp(updateData as Map<String, String>)
                 XLog.d("updateCardByApp:${result.code}")
                 if (result.code == 200) { // 请求成功
                     // 数据更新成功
@@ -286,14 +306,14 @@ class ObtainMessageViewModel @Inject constructor(): ViewModel() {
     /**
      * 根据网络地址获取本地的缓存文件路径
      * */
-    fun getLocalFileFromNetUrl(url: String, attachmentType: AttachmentType):File {
+    fun getLocalFileFromNetUrl(url: String, attachmentType: AttachmentType): File {
         if (url.startsWith("http")) {
-            val folder = when(attachmentType) {
-                AttachmentType.PIC-> SystemConstant.CameraFolder
+            val folder = when (attachmentType) {
+                AttachmentType.PIC -> SystemConstant.CameraFolder
                 else -> SystemConstant.SoundFolder
             }
             var name = if (url.contains("?")) {
-                url.substring(url.lastIndexOf("/")+1, url.indexOf("?"))
+                url.substring(url.lastIndexOf("/") + 1, url.indexOf("?"))
             } else {
                 url.substringAfterLast("/")
             }

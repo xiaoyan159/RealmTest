@@ -12,6 +12,7 @@ import com.navinfo.volvo.model.network.NetworkDeleteMessagePost
 import com.navinfo.volvo.model.network.NetworkMessageListPost
 import com.navinfo.volvo.repository.database.DatabaseRepository
 import com.navinfo.volvo.repository.network.NetworkRepository
+import com.navinfo.volvo.repository.preferences.PreferencesRepository
 import com.navinfo.volvo.util.NetResult
 import com.navinfo.volvo.util.asLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,25 +26,35 @@ class HomeViewModel @Inject constructor(
     private val netRepository: NetworkRepository,
     private val dataRepository: DatabaseRepository,
     private val messageDao: GreetingMessageDao,
+    private val shard: PreferencesRepository
 ) : ViewModel() {
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading = _isLoading.asLiveData()
 
+
 //    private val _messageList = MutableLiveData<List<GreetingMessage>>()
 //    val messageList = _messageList.asLiveData()
-
 
     val messageList: Flow<PagingData<GreetingMessage>>
         get() = dataRepository.getMessageByPaging()
 
+    lateinit var userName: String
+
+    init {
+        viewModelScope.launch {
+            shard.loginUser().collect {
+                userName = it!!.username
+            }
+        }
+    }
 
     fun getNetMessageList() {
         if (_isLoading.value == true)
             return
         _isLoading.postValue(true)
         viewModelScope.launch {
-            val messagePost = NetworkMessageListPost(who = "", toWho = "")
+            val messagePost = NetworkMessageListPost(who = userName, toWho = "")
             when (val result = netRepository.getMessageList(messagePost)) {
                 is NetResult.Success -> {
                     _isLoading.value = false
@@ -70,13 +81,18 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val post = NetworkDeleteMessagePost(id)
             netRepository.deleteMessage(post)
+            messageDao.deleteById(id)
             when (val result = netRepository.deleteMessage(post)) {
                 is NetResult.Success -> {
                     _isLoading.value = false
                 }
                 is NetResult.Failure -> {
                     _isLoading.value = false
-                    Toast.makeText(application, "${result.code}:${result.msg}", Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        application,
+                        "服务返回信息：${result.code}:${result.msg}",
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 }
                 is NetResult.Error -> {

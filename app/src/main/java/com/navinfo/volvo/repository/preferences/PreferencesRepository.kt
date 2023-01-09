@@ -1,6 +1,7 @@
 package com.navinfo.volvo.repository.preferences
 
 import com.navinfo.volvo.model.proto.LoginUser
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
 /**

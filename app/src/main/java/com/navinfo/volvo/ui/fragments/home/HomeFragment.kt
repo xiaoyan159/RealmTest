@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.navinfo.volvo.R
 import com.navinfo.volvo.databinding.FragmentHomeBinding
+import com.navinfo.volvo.databinding.HomeAdapterNotingBinding
+import com.navinfo.volvo.databinding.LoadStateViewBinding
 import com.navinfo.volvo.tools.DisplayUtil
 import com.navinfo.volvo.ui.fragments.BaseFragment
 import com.yanzhenjie.recyclerview.*
@@ -33,12 +35,14 @@ class HomeFragment : BaseFragment(), OnItemClickListener, OnItemMenuClickListene
     private val viewModel by viewModels<HomeViewModel>()
 
     private val messageAdapter by lazy { HomeAdapter(this) }
-
+    private var headBinding: HomeAdapterNotingBinding? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        headBinding = HomeAdapterNotingBinding.inflate(inflater, container, false)
         initView()
         return root
     }
@@ -95,6 +99,7 @@ class HomeFragment : BaseFragment(), OnItemClickListener, OnItemMenuClickListene
         binding.homeRecyclerview.setOnItemClickListener(this)
         //使用下拉加载
 //        binding.homeRecyclerview.useDefaultLoadMore() // 使用默认的加载更多的View。
+
         binding.homeRecyclerview.setLoadMoreListener {
             Log.e("jingo", "下拉加载开始")
 
@@ -118,9 +123,11 @@ class HomeFragment : BaseFragment(), OnItemClickListener, OnItemMenuClickListene
         messageAdapter.addLoadStateListener {
             when (it.refresh) {
                 is LoadState.NotLoading -> {
+                    binding.homeRecyclerview.addHeaderView(headBinding!!.root)
                     Log.d("jingo", "is NotLoading")
                 }
                 is LoadState.Loading -> {
+                    binding.homeRecyclerview.removeHeaderView(headBinding!!.root)
                     Log.d("jingo", "is Loading")
                 }
                 is LoadState.Error -> {
@@ -164,6 +171,7 @@ class HomeFragment : BaseFragment(), OnItemClickListener, OnItemMenuClickListene
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        headBinding = null
     }
 
     override fun onItemClick(view: View?, adapterPosition: Int) {

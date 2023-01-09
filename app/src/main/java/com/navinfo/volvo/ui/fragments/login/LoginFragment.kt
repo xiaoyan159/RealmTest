@@ -45,7 +45,6 @@ class LoginFragment : BaseFragment() {
                 if (it != null){
                     viewBinding.loginUser = it
                 }
-                cancel()
             }
         }
         viewBinding.loginFragmentRegisterButton.setOnClickListener {

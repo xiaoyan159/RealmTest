@@ -17,12 +17,14 @@
         android:layout_height="wrap_content">
 
 
-        <ImageView
+        <androidx.constraintlayout.utils.widget.ImageFilterView
             android:id="@+id/message_head_icon"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginLeft="8dp"
-            android:src="@mipmap/volvo_logo_small"
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_launcher"
+            app:roundPercent="0.4"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

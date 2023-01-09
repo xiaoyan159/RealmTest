@@ -14,10 +14,11 @@
         android:layout_height="match_parent"
         tools:context="com.navinfo.volvo.ui.fragments.login.LoginFragment">
 
-        <androidx.constraintlayout.utils.widget.ImageFilterView
+        <ImageView
             android:id="@+id/login_fragment_logo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="fitXY"
             android:src="@mipmap/volvo_logo_small"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
