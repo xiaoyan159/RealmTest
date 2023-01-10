@@ -1,23 +1,29 @@
 package com.navinfo.volvo.ui.fragments.login
 
-import android.view.View
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.navinfo.volvo.database.AppDatabase
-import com.navinfo.volvo.database.entity.User
-import com.navinfo.volvo.util.SharedPreferenceHelper
+import androidx.lifecycle.viewModelScope
+import com.navinfo.volvo.repository.preferences.PreferencesRepository
+import com.navinfo.volvo.util.asLiveData
+//import com.navinfo.volvo.repository.preferences.PreferencesRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class LoginViewModel @Inject constructor(private val sharedPreferenceHelper: SharedPreferenceHelper) : ViewModel() {
+@HiltViewModel
+class LoginViewModel @Inject constructor(private val repository: PreferencesRepository) :
+    ViewModel() {
 
-//    val user: LiveData<User> = _user
+    val user = repository.loginUser()
 
-    fun liveDataOnclick(view: View) {
-
+    fun onClickLogin(name: String, password: String) {
+        viewModelScope.launch {
+            repository.saveLoginUser(id = "", name = name, password = password)
+        }
     }
 
-    fun userRegister(username: String, password: String) {
+    fun onClickLoginRegister(username: String, password: String) {
 
     }
 }

@@ -24,14 +24,15 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/volvo_logo_small"
-        android:requestLegacyExternalStorage="true"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NavinfoVolvo"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".ui.message.MessageActivity"
+            android:configChanges="orientation"
             android:exported="false"
             android:label="@string/title_activity_second"
             android:screenOrientation="portrait"
@@ -54,6 +55,8 @@
         <meta-data
             android:name="android.app.lib_name"
             android:value="" />
-        <meta-data android:name="ScopedStorage" android:value="true" />
+        <meta-data
+            android:name="ScopedStorage"
+            android:value="true" />
     </application>
 </manifest>

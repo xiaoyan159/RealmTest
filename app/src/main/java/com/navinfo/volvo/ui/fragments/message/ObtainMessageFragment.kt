@@ -7,7 +7,8 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
@@ -17,15 +18,11 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
-import com.easytools.tools.DateUtils
-import com.easytools.tools.DisplayUtils
-import com.easytools.tools.FileIOUtils
-import com.easytools.tools.ResourceUtils
-import com.easytools.tools.ToastUtils
+import com.easytools.tools.*
 import com.elvishew.xlog.XLog
 import com.github.file_picker.FileType
 import com.github.file_picker.ListDirection
@@ -52,6 +49,7 @@ import com.navinfo.volvo.util.PhotoLoader
 import com.navinfo.volvo.utils.EasyMediaFile
 import com.navinfo.volvo.utils.SystemConstant
 import com.nhaarman.supertooltips.ToolTip
+import dagger.hilt.android.AndroidEntryPoint
 import indi.liyi.viewer.Utils
 import indi.liyi.viewer.ViewData
 import top.zibin.luban.Luban
@@ -62,12 +60,10 @@ import java.util.*
 import kotlin.streams.toList
 
 
-//@RuntimePermissions
-class ObtainMessageFragment: Fragment() {
+@AndroidEntryPoint
+class ObtainMessageFragment : Fragment() {
     private var _binding: FragmentObtainMessageBinding? = null
-    private val obtainMessageViewModel by lazy {
-        ViewModelProvider(requireActivity()).get(ObtainMessageViewModel::class.java)
-    }
+    private val obtainMessageViewModel by viewModels<ObtainMessageViewModel>()
     private val photoHelper by lazy {
         EasyMediaFile().setCrop(true)
     }
@@ -91,18 +87,17 @@ class ObtainMessageFragment: Fragment() {
         _binding = FragmentObtainMessageBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val greetingMessage = GreetingMessage()
-        obtainMessageViewModel.setCurrentMessage(greetingMessage)
+        obtainMessageViewModel.setCurrentMessage(GreetingMessage(who = obtainMessageViewModel.username))
 
-        obtainMessageViewModel?.getMessageLiveData()?.observe(
+        obtainMessageViewModel.getMessageLiveData().observe(
             viewLifecycleOwner, Observer {
                 // 初始化界面显示内容
-                if(it.name?.isNotEmpty() == true)
+                if (it.name?.isNotEmpty() == true)
                     binding.tvMessageTitle?.setText(it.name)
                 if (it.sendDate?.isNotEmpty() == true) {
                     // 获取当前发送时间，如果早于当前时间，则显示现在
                     val sendDate = DateUtils.str2Date(it.sendDate, dateSendFormat)
-                    if (sendDate<=Date()) {
+                    if (sendDate <= Date()) {
                         binding.btnSendTime.text = "现在"
                     } else {
                         binding.btnSendTime.text = it.sendDate
@@ -112,39 +107,47 @@ class ObtainMessageFragment: Fragment() {
                 }
                 var hasPhoto = false
                 var hasAudio = false
-                if (it.imageUrl!=null&&it.imageUrl?.isNotEmpty() == true) {
+                if (it.imageUrl != null && it.imageUrl?.isNotEmpty() == true) {
                     hasPhoto = true
-//                    Glide.with(this@ObtainMessageFragment)
-//                        .asBitmap().fitCenter()
-//                        .load(it.imageUrl)
-//                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                        .into(binding.imgMessageAttachment)
+                    //                    Glide.with(this@ObtainMessageFragment)
+                    //                        .asBitmap().fitCenter()
+                    //                        .load(it.imageUrl)
+                    //                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    //                        .into(binding.imgMessageAttachment)
                     // 如果当前attachment文件是本地文件，开始尝试网络上传
                     val str = it.imageUrl?.replace("\\", "/")
-                    binding.tvPhotoName.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG )
+                    binding.tvPhotoName.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG)
                     if (!str!!.startsWith("http")) {
-                        obtainMessageViewModel.uploadAttachment(File(it.imageUrl), AttachmentType.PIC)
+                        obtainMessageViewModel.uploadAttachment(
+                            File(it.imageUrl),
+                            AttachmentType.PIC
+                        )
                         binding.tvPhotoName.text = str.substringAfterLast("/", "picture.jpg")
                     } else {
                         if (str.contains("?")) {
-                            binding.tvPhotoName.text = str.substring(str.lastIndexOf("/")+1, str.indexOf("?"))
+                            binding.tvPhotoName.text =
+                                str.substring(str.lastIndexOf("/") + 1, str.indexOf("?"))
                         } else {
                             binding.tvPhotoName.text = str.substringAfterLast("/")
                         }
                     }
                 }
 
-                if (it.mediaUrl!=null&&it.mediaUrl?.isNotEmpty() == true) {
+                if (it.mediaUrl != null && it.mediaUrl?.isNotEmpty() == true) {
                     hasAudio = true
-                    binding.tvAudioName.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG )
+                    binding.tvAudioName.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG)
                     // 如果当前attachment文件是本地文件，开始尝试网络上传
                     val str = it.mediaUrl?.replace("\\", "/")
                     if (!str!!.startsWith("http")) {
-                        obtainMessageViewModel.uploadAttachment(File(it.mediaUrl),AttachmentType.AUDIO)
+                        obtainMessageViewModel.uploadAttachment(
+                            File(it.mediaUrl),
+                            AttachmentType.AUDIO
+                        )
                         binding.tvAudioName.text = str.substringAfterLast("/", "audio.m4a")
                     } else {
                         if (str.contains("?")) {
-                            binding.tvAudioName.text = str.substring(str.lastIndexOf("/")+1, str.indexOf("?"))
+                            binding.tvAudioName.text =
+                                str.substring(str.lastIndexOf("/") + 1, str.indexOf("?"))
                         } else {
                             binding.tvAudioName.text = str.substringAfterLast("/")
                         }
@@ -152,7 +155,7 @@ class ObtainMessageFragment: Fragment() {
                 }
                 binding.layerPhotoResult.visibility = if (hasPhoto) VISIBLE else GONE
                 binding.layerGetPhoto.visibility = if (hasPhoto) GONE else VISIBLE
-//                binding.imgMessageAttachment.visibility = if (hasPhoto) VISIBLE else GONE
+                //                binding.imgMessageAttachment.visibility = if (hasPhoto) VISIBLE else GONE
 
                 binding.layerAudioResult.visibility = if (hasAudio) VISIBLE else GONE
                 binding.layerGetAudio.visibility = if (hasAudio) GONE else VISIBLE
@@ -188,7 +191,7 @@ class ObtainMessageFragment: Fragment() {
             obtainMessageViewModel.getMessageLiveData().value?.name = it.toString()
         })
 
-        binding.edtSendFrom.addTextChangedListener (afterTextChanged = {
+        binding.edtSendFrom.addTextChangedListener(afterTextChanged = {
             obtainMessageViewModel.getMessageLiveData().value?.who = it.toString()
         })
 
@@ -201,8 +204,11 @@ class ObtainMessageFragment: Fragment() {
         }
         val sendToArray = mutableListOf<VolvoModel>(VolvoModel("XC60", "智雅", "LYVXFEFEXNL754427"))
         binding.edtSendTo.adapter = ArrayAdapter<String>(requireContext(),
-            android.R.layout.simple_dropdown_item_1line, android.R.id.text1, sendToArray.stream().map { it -> "${it.version} ${it.model} ${it.num}" }.toList())
-        binding.edtSendTo.onItemSelectedListener = object: OnItemSelectedListener {
+            android.R.layout.simple_dropdown_item_1line,
+            android.R.id.text1,
+            sendToArray.stream().map { it -> "${it.version} ${it.model} ${it.num}" }.toList()
+        )
+        binding.edtSendTo.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 obtainMessageViewModel.getMessageLiveData().value?.toWho = sendToArray[p2].num
             }
@@ -219,9 +225,19 @@ class ObtainMessageFragment: Fragment() {
                 override fun onClickListener(selectTime: String) {
                     val sendDate = DateUtils.str2Date(selectTime, dateShowFormat)
                     if (sendDate <= Date()) {
-                        obtainMessageViewModel.updateMessageSendTime(DateUtils.date2Str(Date(), dateSendFormat))
+                        obtainMessageViewModel.updateMessageSendTime(
+                            DateUtils.date2Str(
+                                Date(),
+                                dateSendFormat
+                            )
+                        )
                     } else {
-                        obtainMessageViewModel.updateMessageSendTime(DateUtils.date2Str(sendDate, dateSendFormat))
+                        obtainMessageViewModel.updateMessageSendTime(
+                            DateUtils.date2Str(
+                                sendDate,
+                                dateSendFormat
+                            )
+                        )
                     }
                 }
             }
@@ -238,7 +254,8 @@ class ObtainMessageFragment: Fragment() {
 
                     override fun onGranted(permissions: MutableList<String>, all: Boolean) {
                         if (!all) {
-                            Toast.makeText(activity, "获取部分权限成功，但部分权限未正常授予", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(activity, "获取部分权限成功，但部分权限未正常授予", Toast.LENGTH_SHORT)
+                                .show()
                             return
                         }
                         // 开始启动拍照界面
@@ -280,13 +297,23 @@ class ObtainMessageFragment: Fragment() {
                         // Do something here with selected files
                         val audioFile = files.get(0).file
                         if (!audioFile.parentFile.parentFile.absolutePath.equals(SystemConstant.SoundFolder)) {
-                            val copyResult = FileIOUtils.writeFileFromIS(File(SystemConstant.SoundFolder, audioFile.name), FileInputStream(audioFile))
-                            XLog.e("拷贝结果："+copyResult)
+                            val copyResult = FileIOUtils.writeFileFromIS(
+                                File(
+                                    SystemConstant.SoundFolder,
+                                    audioFile.name
+                                ), FileInputStream(audioFile)
+                            )
+                            XLog.e("拷贝结果：" + copyResult)
                             if (!copyResult) {
                                 ToastUtils.showToast("无法访问该文件，请重新选择其他文件")
                                 return
                             }
-                            obtainMessageViewModel.updateMessageAudio(File(SystemConstant.SoundFolder, audioFile.name).absolutePath)
+                            obtainMessageViewModel.updateMessageAudio(
+                                File(
+                                    SystemConstant.SoundFolder,
+                                    audioFile.name
+                                ).absolutePath
+                            )
                         } else {
                             obtainMessageViewModel.updateMessageAudio(audioFile.absolutePath)
                         }
@@ -299,7 +326,7 @@ class ObtainMessageFragment: Fragment() {
                                 ToastUtils.showToast("只能选择.m4a文件")
                                 return
                             }
-                            if (media.file.length()>2*1000*1000) {
+                            if (media.file.length() > 2 * 1000 * 1000) {
                                 ToastUtils.showToast("文件不能超过2M！")
                                 return
                             }
@@ -330,23 +357,25 @@ class ObtainMessageFragment: Fragment() {
                 .request(object : OnPermissionCallback {
                     override fun onGranted(permissions: MutableList<String>, all: Boolean) {
                         if (!all) {
-                            Toast.makeText(activity, "获取部分权限成功，但部分权限未正常授予", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(activity, "获取部分权限成功，但部分权限未正常授予", Toast.LENGTH_SHORT)
+                                .show()
                             return
                         }
-                        when(motionEvent.action) {
-                            MotionEvent.ACTION_DOWN-> {
+                        when (motionEvent.action) {
+                            MotionEvent.ACTION_DOWN -> {
                                 // 申请权限
                                 recorderLifecycleObserver.initAndStartRecorder()
                                 startRecordTime = System.currentTimeMillis()
                                 false
                             }
                             MotionEvent.ACTION_UP -> {
-                                if (System.currentTimeMillis() - startRecordTime<2000) {
+                                if (System.currentTimeMillis() - startRecordTime < 2000) {
                                     ToastUtils.showToast("录音时间太短！")
                                     recorderLifecycleObserver.stopAndReleaseRecorder()
                                     return
                                 }
-                                val recorderAudioPath = recorderLifecycleObserver.stopAndReleaseRecorder()
+                                val recorderAudioPath =
+                                    recorderLifecycleObserver.stopAndReleaseRecorder()
                                 if (File(recorderAudioPath).exists()) {
                                     obtainMessageViewModel.updateMessageAudio(recorderAudioPath)
                                 }
@@ -376,7 +405,7 @@ class ObtainMessageFragment: Fragment() {
         photoHelper.setCallback {
             if (it.exists()) {
                 val fileName = it.name.lowercase()
-                if (fileName.endsWith(".jpg")||fileName.endsWith(".jpeg")||fileName.endsWith(".png")) {
+                if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png")) {
                     // 获取选中的图片,自动压缩图片质量
                     // 压缩图片文件
                     Luban.with(context)
@@ -394,19 +423,35 @@ class ObtainMessageFragment: Fragment() {
 
                             override fun onSuccess(file: File?) {
                                 XLog.d("压缩图片成功:${file?.absolutePath}")
-                            // 删除源文件
-                            if (!it.absolutePath.equals(file?.absolutePath)) {
-                                it?.delete()
-                            }
+                                // 删除源文件
+                                if (!it.absolutePath.equals(file?.absolutePath)) {
+                                    it?.delete()
+                                }
                                 // 如果当前文件不在camera缓存文件夹下，则移动该文件
                                 if (!file!!.parentFile.absolutePath.equals(SystemConstant.CameraFolder)) {
-                                    val copyResult = FileIOUtils.writeFileFromIS(File(SystemConstant.CameraFolder, fileName), FileInputStream(file))
-                                    XLog.e("拷贝结果："+copyResult)
-                                    // 跳转回原Fragment，展示拍摄的照片
-                                    ViewModelProvider(requireActivity()).get(ObtainMessageViewModel::class.java).updateMessagePic(File(SystemConstant.CameraFolder, fileName).absolutePath)
+                                    try {
+                                        val copyResult = FileIOUtils.writeFileFromIS(
+                                            File(
+                                                SystemConstant.CameraFolder,
+                                                fileName
+                                            ), FileInputStream(file)
+                                        )
+                                        XLog.e("拷贝结果：$copyResult")
+                                        // 跳转回原Fragment，展示拍摄的照片
+                                        obtainMessageViewModel
+                                            .updateMessagePic(
+                                                File(
+                                                    SystemConstant.CameraFolder,
+                                                    fileName
+                                                ).absolutePath
+                                            )
+                                    } catch (e: Exception) {
+                                        XLog.e("崩溃：${e.message}")
+                                    }
+
                                 } else {
                                     // 跳转回原Fragment，展示拍摄的照片
-                                    ViewModelProvider(requireActivity()).get(ObtainMessageViewModel::class.java).updateMessagePic(file!!.absolutePath)
+                                    obtainMessageViewModel.updateMessagePic(file!!.absolutePath)
                                 }
                             }
 
@@ -414,12 +459,23 @@ class ObtainMessageFragment: Fragment() {
                                 XLog.d("压缩图片失败:${e.message}")
                             }
                         }).launch()
-                } else if (fileName.endsWith(".mp3")||fileName.endsWith(".wav")||fileName.endsWith(".amr")||fileName.endsWith(".m4a")) {
+                } else if (fileName.endsWith(".mp3") || fileName.endsWith(".wav") || fileName.endsWith(
+                        ".amr"
+                    ) || fileName.endsWith(".m4a")
+                ) {
                     ToastUtils.showToast(it.absolutePath)
                     if (!it.parentFile.parentFile.absolutePath.equals(SystemConstant.SoundFolder)) {
-                        val copyResult = FileIOUtils.writeFileFromIS(File(SystemConstant.SoundFolder, fileName), FileInputStream(it))
-                        XLog.e("拷贝结果："+copyResult)
-                        obtainMessageViewModel.updateMessageAudio(File(SystemConstant.SoundFolder, fileName).absolutePath)
+                        val copyResult = FileIOUtils.writeFileFromIS(
+                            File(SystemConstant.SoundFolder, fileName),
+                            FileInputStream(it)
+                        )
+                        XLog.e("拷贝结果：" + copyResult)
+                        obtainMessageViewModel.updateMessageAudio(
+                            File(
+                                SystemConstant.SoundFolder,
+                                fileName
+                            ).absolutePath
+                        )
                     } else {
                         obtainMessageViewModel.updateMessageAudio(it.absolutePath)
                     }
@@ -432,12 +488,14 @@ class ObtainMessageFragment: Fragment() {
         }
 
         binding.tvAudioName.setOnClickListener {
-            binding.llAudioPlay.visibility = if (binding.llAudioPlay.visibility == VISIBLE) GONE else VISIBLE
+            binding.llAudioPlay.visibility =
+                if (binding.llAudioPlay.visibility == VISIBLE) GONE else VISIBLE
             // 判断当前播放的文件是否在缓存文件夹内，如果不在首先下载该文件
             val fileUrl = obtainMessageViewModel.getMessageLiveData().value!!.mediaUrl!!
-            val localFile = obtainMessageViewModel.getLocalFileFromNetUrl(fileUrl, AttachmentType.AUDIO)
+            val localFile =
+                obtainMessageViewModel.getLocalFileFromNetUrl(fileUrl, AttachmentType.AUDIO)
             if (!localFile.exists()) {
-                obtainMessageViewModel.downLoadFile(fileUrl, localFile, object: DownloadCallback {
+                obtainMessageViewModel.downLoadFile(fileUrl, localFile, object : DownloadCallback {
                     override fun progress(progress: Int) {
                     }
 
@@ -455,7 +513,7 @@ class ObtainMessageFragment: Fragment() {
         }
 
         binding.btnObtainMessageBack.setOnClickListener {
-            Navigation.findNavController(it).popBackStack()
+            findNavController().popBackStack()
         }
 
         binding.btnObtainMessageConfirm.setOnClickListener {
@@ -476,7 +534,7 @@ class ObtainMessageFragment: Fragment() {
                 toolTipRelativeLayout.showToolTipForView(toolTip, binding.tiLayoutTitle)
                 checkResult = false
             } else {
-                if (messageData?.name!!.length>10) {
+                if (messageData?.name!!.length > 10) {
                     val toolTipRelativeLayout =
                         binding.ttTitle
                     val toolTip = ToolTip()
@@ -514,7 +572,7 @@ class ObtainMessageFragment: Fragment() {
                 checkResult = false
             }
 
-            if (messageData?.who?.isEmpty()==true) {
+            if (messageData?.who?.isEmpty() == true) {
                 val toolTipRelativeLayout =
                     binding.ttSendFrom
                 val toolTip = ToolTip()
@@ -526,7 +584,7 @@ class ObtainMessageFragment: Fragment() {
                 toolTipRelativeLayout.showToolTipForView(toolTip, binding.edtSendFrom)
                 checkResult = false
             }
-            if (messageData?.toWho?.isEmpty()==true) {
+            if (messageData?.toWho?.isEmpty() == true) {
                 val toolTipRelativeLayout =
                     binding.ttSendTo
                 val toolTip = ToolTip()
@@ -547,22 +605,30 @@ class ObtainMessageFragment: Fragment() {
                     localAttachmentList.add(imageAttachment)
                 }
                 if (messageData?.mediaUrl?.startsWith("http") == false) {
-                    val audioAttachment = Attachment("", messageData.mediaUrl!!, AttachmentType.AUDIO)
+                    val audioAttachment =
+                        Attachment("", messageData.mediaUrl!!, AttachmentType.AUDIO)
                     localAttachmentList.add(audioAttachment)
                 }
                 if (localAttachmentList.isNotEmpty()) {
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle("提示")
                         .setMessage("当前照片及音频内容需首先上传，是否尝试上传?")
-                        .setPositiveButton("确定", DialogInterface.OnClickListener { dialogInterface, i ->
-                            dialogInterface.dismiss()
-                            for (attachment in localAttachmentList) {
-                                obtainMessageViewModel.uploadAttachment(File(attachment.pathUrl), attachment.attachmentType)
-                            }
-                        })
-                        .setNegativeButton("取消", DialogInterface.OnClickListener {
-                            dialogInterface, i -> dialogInterface.dismiss()
-                        })
+                        .setPositiveButton(
+                            "确定",
+                            DialogInterface.OnClickListener { dialogInterface, i ->
+                                dialogInterface.dismiss()
+                                for (attachment in localAttachmentList) {
+                                    obtainMessageViewModel.uploadAttachment(
+                                        File(attachment.pathUrl),
+                                        attachment.attachmentType
+                                    )
+                                }
+                            })
+                        .setNegativeButton(
+                            "取消",
+                            DialogInterface.OnClickListener { dialogInterface, i ->
+                                dialogInterface.dismiss()
+                            })
                         .show()
                     return@setOnClickListener
                 }
@@ -571,7 +637,7 @@ class ObtainMessageFragment: Fragment() {
                 val sendDate = DateUtils.str2Date(messageData?.sendDate, dateSendFormat)
                 val cal = Calendar.getInstance()
                 cal.time = Date()
-                cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE)+1)
+                cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + 1)
                 if (sendDate.time < cal.time.time) { // 发送时间设置小于当前时间1分钟后，Toast提示用户并自动设置发送时间
                     messageData?.sendDate = DateUtils.date2Str(cal.time, dateSendFormat)
                     ToastUtils.showToast("自动调整发送时间为1分钟后发送")
@@ -581,7 +647,7 @@ class ObtainMessageFragment: Fragment() {
                 }
 
                 // 开始网络提交数据
-                if (obtainMessageViewModel.getMessageLiveData().value?.id==0L) { // 如果网络id为空，则调用更新操作
+                if (obtainMessageViewModel.getMessageLiveData().value?.id == 0L) { // 如果网络id为空，则调用更新操作
                     obtainMessageViewModel.insertCardByApp(confirmCallback)
                 } else {
                     obtainMessageViewModel.updateCardByApp(confirmCallback)
@@ -593,7 +659,8 @@ class ObtainMessageFragment: Fragment() {
             val viewData = ViewData()
             viewData.imageSrc = obtainMessageViewModel.getMessageLiveData().value!!.imageUrl
             viewData.targetX = Utils.dp2px(context, 10F).toFloat()
-            viewData.targetWidth = DisplayUtils.getScreenWidthPixels(activity) - Utils.dp2px(context, 20F)
+            viewData.targetWidth =
+                DisplayUtils.getScreenWidthPixels(activity) - Utils.dp2px(context, 20F)
             viewData.targetHeight = Utils.dp2px(context, 200F)
             val viewDataList = listOf(viewData)
             binding.imageViewer.overlayStatusBar(true) // ImageViewer 是否会占据 StatusBar 的空间
@@ -603,11 +670,13 @@ class ObtainMessageFragment: Fragment() {
                 .watch(0) // 开启浏览
 
         }
+        binding.edtSendFrom.setText(obtainMessageViewModel.username)
+
     }
 
-    val confirmCallback = object: ObtainMessageViewModel.MyConfirmCallback {
+    val confirmCallback = object : ObtainMessageViewModel.MyConfirmCallback {
         override fun onSucess() {
-            findNavController().navigate(R.id.navigation_home)
+            findNavController().popBackStack()
         }
     }
 
@@ -648,6 +717,7 @@ class ObtainMessageFragment: Fragment() {
             })
             .show()
     }
+
     fun onRecorderDenied() {
         ToastUtils.showToast("当前操作需要您授权录音权限！")
     }

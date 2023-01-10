@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option java_package = "com.navinfo.volvo.model.proto";
+option java_multiple_files = true;
+
+message LoginUser {
+  string username = 1;
+  string password = 2;
+}

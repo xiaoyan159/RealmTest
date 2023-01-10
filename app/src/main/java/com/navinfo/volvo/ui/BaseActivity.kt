@@ -6,6 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import javax.inject.Inject
 
 abstract class BaseActivity : AppCompatActivity() {
-    @Inject
-    lateinit var viewModelFactoryProvider: ViewModelProvider.Factory
+//    @Inject
+//    lateinit var viewModelFactoryProvider: ViewModelProvider.Factory
 }
