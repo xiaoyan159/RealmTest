@@ -7,6 +7,7 @@ import com.navinfo.volvo.repository.preferences.PreferencesRepository
 import com.navinfo.volvo.util.asLiveData
 //import com.navinfo.volvo.repository.preferences.PreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,12 +18,8 @@ class LoginViewModel @Inject constructor(private val repository: PreferencesRepo
 
     val user = repository.loginUser()
 
-    fun onClickLogin(name: String, password: String) {
-        if (name != "") {
-            viewModelScope.launch {
-                repository.saveLoginUser(id = "", name = name, password = password)
-            }
-        }
+    suspend fun onClickLogin(name: String, password: String) {
+        repository.saveLoginUser(id = "", name = name, password = password)
     }
 
 //    fun onClickLoginRegister(username: String, password: String) {

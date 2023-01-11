@@ -51,16 +51,7 @@ class PreferencesRepositoryImp @Inject constructor(
         it[intPreferencesKey(key)]
     }
 
-    override fun loginUser(): Flow<LoginUser?> = loginUser.data
-
-    override fun getUserName(): String {
-        Log.e("jingo", "获取用户名 开始")
-        var username = ""
-        loginUser.data.map {
-            username = it.username
-        }
-        Log.e("jingo", "获取用户名 结束后 $username")
-        return username
+    override fun loginUser(): Flow<LoginUser?> {
+        return loginUser.data
     }
-
 }
