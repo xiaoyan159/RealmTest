@@ -1,5 +1,7 @@
 package com.navinfo.volvo.ui.fragments.message
 
+import android.util.Log
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,10 +15,10 @@ import com.navinfo.volvo.http.DownloadCallback
 import com.navinfo.volvo.http.DownloadManager
 import com.navinfo.volvo.http.DownloadState
 import com.navinfo.volvo.http.NavinfoVolvoCall
-import com.navinfo.volvo.model.proto.LoginUser
 import com.navinfo.volvo.repository.preferences.PreferencesRepository
 import com.navinfo.volvo.utils.SystemConstant
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -29,19 +31,20 @@ import javax.inject.Inject
 class ObtainMessageViewModel @Inject constructor(
     private val pre: PreferencesRepository,
 ) : ViewModel() {
+    var username = ""
+    init {
+        viewModelScope.launch {
+            pre.loginUser().collectLatest {
+                username = it!!.username
+                Log.e("jingo", "用户赋值结束 是 ${username.hashCode()}")
+            }
+        }
+    }
+
     private val msgLiveData: MutableLiveData<GreetingMessage> by lazy {
         MutableLiveData<GreetingMessage>()
     }
 
-    var username: String = ""
-
-    init {
-        viewModelScope.launch {
-            pre.loginUser().collect {
-                username = it!!.username
-            }
-        }
-    }
 
     fun setCurrentMessage(msg: GreetingMessage) {
         msgLiveData.postValue(msg)

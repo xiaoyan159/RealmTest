@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.navinfo.volvo.R
 import com.navinfo.volvo.databinding.FragmentLoginBinding
@@ -41,9 +43,11 @@ class LoginFragment : BaseFragment() {
     private fun initView() {
 
         lifecycleScope.launch {
-            viewModel.user.collect {
-                if (it != null){
-                    viewBinding.loginUser = it
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.user.collect {
+                    if (it != null) {
+                        viewBinding.loginUser = it
+                    }
                 }
             }
         }

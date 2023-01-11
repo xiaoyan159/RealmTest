@@ -86,13 +86,17 @@ class ObtainMessageFragment : Fragment() {
         _binding = FragmentObtainMessageBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        obtainMessageViewModel.setCurrentMessage(GreetingMessage(who = obtainMessageViewModel.username))
+        var messege = arguments?.getParcelable<GreetingMessage>("message")
+        if (messege == null) {
+            messege = GreetingMessage(who = obtainMessageViewModel.username)
+        }
+        obtainMessageViewModel.setCurrentMessage(messege)
 
         obtainMessageViewModel.getMessageLiveData().observe(
             viewLifecycleOwner, Observer {
                 // 初始化界面显示内容
                 if (it.name?.isNotEmpty() == true)
-                    binding.tvMessageTitle?.setText(it.name)
+                    binding.tvMessageTitle.setText(it.name)
                 if (it.sendDate?.isNotEmpty() == true) {
                     // 获取当前发送时间，如果早于当前时间，则显示现在
                     val sendDate = DateUtils.str2Date(it.sendDate, dateSendFormat)
@@ -187,7 +191,8 @@ class ObtainMessageFragment : Fragment() {
             obtainMessageViewModel.updateMessageAudio("")
         }
         val sendToArray = mutableListOf<VolvoModel>(VolvoModel("XC60", "智雅", "LYVXFEFEXNL754427"))
-        binding.edtSendTo.adapter = ArrayAdapter<String>(requireContext(),
+        binding.edtSendTo.adapter = ArrayAdapter<String>(
+            requireContext(),
             android.R.layout.simple_dropdown_item_1line,
             android.R.id.text1,
             sendToArray.stream().map { it -> "${it.version} ${it.model} ${it.num}" }.toList()
@@ -656,7 +661,6 @@ class ObtainMessageFragment : Fragment() {
 
         }
         binding.edtSendFrom.setText(obtainMessageViewModel.username)
-
     }
 
     val confirmCallback = object : ObtainMessageViewModel.MyConfirmCallback {
@@ -671,7 +675,7 @@ class ObtainMessageFragment : Fragment() {
     }
 
     fun startCamera(it: View) {
-        Navigation.findNavController(binding.root).navigate(com.navinfo.volvo.R.id.nav_2_camera)
+//        Navigation.findNavController(binding.root).navigate(com.navinfo.volvo.R.id.nav_2_camera)
     }
 
     fun showRationaleForCamera(permissions: MutableList<String>) {

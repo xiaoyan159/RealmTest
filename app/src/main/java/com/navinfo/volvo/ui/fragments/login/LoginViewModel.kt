@@ -18,12 +18,18 @@ class LoginViewModel @Inject constructor(private val repository: PreferencesRepo
     val user = repository.loginUser()
 
     fun onClickLogin(name: String, password: String) {
-        viewModelScope.launch {
-            repository.saveLoginUser(id = "", name = name, password = password)
+        if (name != "") {
+            viewModelScope.launch {
+                repository.saveLoginUser(id = "", name = name, password = password)
+            }
         }
     }
 
-    fun onClickLoginRegister(username: String, password: String) {
-
-    }
+//    fun onClickLoginRegister(username: String, password: String) {
+//        if (username != "") {
+//            viewModelScope.launch {
+//                repository.saveLoginUser(id = "", name = username, password = password)
+//            }
+//        }
+//    }
 }

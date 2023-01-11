@@ -14,8 +14,6 @@ interface NavinfoVolvoService {
     suspend fun updateCardByApp(@Body updateData: Map<String, String>):DefaultResponse<String>
     @POST("/navi/cardDelivery/queryCardListByApp")
     fun queryCardListByApp(@Body queryData: MutableMap<String, String>)
-    @POST("/navi/cardDelivery/deleteCardByApp")
-    fun deleteCardByApp(@Body deleteData: MutableMap<String, String>)
     @POST("/img/upload")
     @Multipart
     suspend fun uploadAttachment(@Part attachmentFile: MultipartBody.Part):DefaultResponse<MutableMap<String, String>>
