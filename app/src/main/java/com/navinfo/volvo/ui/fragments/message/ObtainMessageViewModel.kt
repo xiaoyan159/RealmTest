@@ -32,6 +32,7 @@ class ObtainMessageViewModel @Inject constructor(
     private val pre: PreferencesRepository,
 ) : ViewModel() {
     var username = ""
+
     init {
         viewModelScope.launch {
             pre.loginUser().collectLatest {
@@ -47,6 +48,7 @@ class ObtainMessageViewModel @Inject constructor(
 
 
     fun setCurrentMessage(msg: GreetingMessage) {
+        msgLiveData.value = msg
         msgLiveData.postValue(msg)
     }
 

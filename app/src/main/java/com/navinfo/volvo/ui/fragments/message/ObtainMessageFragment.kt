@@ -183,16 +183,19 @@ class ObtainMessageFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        if (obtainMessageViewModel.getMessageLiveData().value!=null&&Constant.message_status_send_over.equals((obtainMessageViewModel.getMessageLiveData().value as GreetingMessage).status)) {
-            binding.tvMessageTitle.isEnabled=false
-            binding.btnStartPhoto.isEnabled=false
-            binding.btnStartCamera.isEnabled=false
-            binding.btnStartRecord.isEnabled=false
-            binding.btnSelectSound.isEnabled=false
-            binding.edtSendFrom.isEnabled=false
-            binding.edtSendTo.isEnabled=false
-            binding.btnSendTime.isEnabled=false
-            binding.btnObtainMessageConfirm.isEnabled=false
+        if (obtainMessageViewModel.getMessageLiveData().value != null && Constant.message_status_send_over.equals(
+                (obtainMessageViewModel.getMessageLiveData().value as GreetingMessage).status
+            )
+        ) {
+            binding.tvMessageTitle.isEnabled = false
+            binding.btnStartPhoto.isEnabled = false
+            binding.btnStartCamera.isEnabled = false
+            binding.btnStartRecord.isEnabled = false
+            binding.btnSelectSound.isEnabled = false
+            binding.edtSendFrom.isEnabled = false
+            binding.edtSendTo.isEnabled = false
+            binding.btnSendTime.isEnabled = false
+            binding.btnObtainMessageConfirm.isEnabled = false
             binding.tvPhotoName.isEnabled = false
             binding.tvAudioName.isEnabled = false
             binding.imgPhotoDelete.isEnabled = false
@@ -675,10 +678,10 @@ class ObtainMessageFragment : Fragment() {
         binding.tvPhotoName.setOnClickListener {
             val viewData = ViewData()
             viewData.imageSrc = obtainMessageViewModel.getMessageLiveData().value!!.imageUrl
-            viewData.targetX = Utils.dp2px(context, 10F).toFloat()
+            viewData.targetX = Utils.dp2px(requireContext(), 10F).toFloat()
             viewData.targetWidth =
-                DisplayUtils.getScreenWidthPixels(activity) - Utils.dp2px(context, 20F)
-            viewData.targetHeight = Utils.dp2px(context, 200F)
+                DisplayUtils.getScreenWidthPixels(requireActivity()) - Utils.dp2px(requireContext(), 20F)
+            viewData.targetHeight = Utils.dp2px(requireContext(), 200F)
             val viewDataList = listOf(viewData)
             binding.imageViewer.overlayStatusBar(true) // ImageViewer 是否会占据 StatusBar 的空间
                 .viewData(viewDataList) // 图片数据
