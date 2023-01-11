@@ -186,6 +186,10 @@ class ObtainMessageFragment : Fragment() {
             binding.edtSendTo.isEnabled=false
             binding.btnSendTime.isEnabled=false
             binding.btnObtainMessageConfirm.isEnabled=false
+            binding.tvPhotoName.isEnabled = false
+            binding.tvAudioName.isEnabled = false
+            binding.imgPhotoDelete.isEnabled = false
+            binding.imgAudioDelete.isEnabled = false
         }
     }
 
@@ -493,30 +497,30 @@ class ObtainMessageFragment : Fragment() {
             ToastUtils.showToast(it.message)
         }
 
-        binding.tvAudioName.setOnClickListener {
-            binding.llAudioPlay.visibility =
-                if (binding.llAudioPlay.visibility == VISIBLE) GONE else VISIBLE
-            // 判断当前播放的文件是否在缓存文件夹内，如果不在首先下载该文件
-            val fileUrl = obtainMessageViewModel.getMessageLiveData().value!!.mediaUrl!!
-            val localFile =
-                obtainMessageViewModel.getLocalFileFromNetUrl(fileUrl, AttachmentType.AUDIO)
-            if (!localFile.exists()) {
-                obtainMessageViewModel.downLoadFile(fileUrl, localFile, object : DownloadCallback {
-                    override fun progress(progress: Int) {
-                    }
-
-                    override fun error(throwable: Throwable) {
-                    }
-
-                    override fun success(file: File) {
-                        binding.voicePlayerView.setAudio(localFile.absolutePath)
-                    }
-
-                })
-            } else {
-                binding.voicePlayerView.setAudio(localFile.absolutePath)
-            }
-        }
+//        binding.tvAudioName.setOnClickListener {
+//            binding.llAudioPlay.visibility =
+//                if (binding.llAudioPlay.visibility == VISIBLE) GONE else VISIBLE
+//            // 判断当前播放的文件是否在缓存文件夹内，如果不在首先下载该文件
+//            val fileUrl = obtainMessageViewModel.getMessageLiveData().value!!.mediaUrl!!
+//            val localFile =
+//                obtainMessageViewModel.getLocalFileFromNetUrl(fileUrl, AttachmentType.AUDIO)
+//            if (!localFile.exists()) {
+//                obtainMessageViewModel.downLoadFile(fileUrl, localFile, object : DownloadCallback {
+//                    override fun progress(progress: Int) {
+//                    }
+//
+//                    override fun error(throwable: Throwable) {
+//                    }
+//
+//                    override fun success(file: File) {
+//                        binding.voicePlayerView.setAudio(localFile.absolutePath)
+//                    }
+//
+//                })
+//            } else {
+//                binding.voicePlayerView.setAudio(localFile.absolutePath)
+//            }
+//        }
 
         binding.btnObtainMessageBack.setOnClickListener {
             findNavController().popBackStack()
@@ -660,22 +664,22 @@ class ObtainMessageFragment : Fragment() {
                 }
             }
         }
-        // 点击照片名称
-        binding.tvPhotoName.setOnClickListener {
-            val viewData = ViewData()
-            viewData.imageSrc = obtainMessageViewModel.getMessageLiveData().value!!.imageUrl
-            viewData.targetX = Utils.dp2px(context, 10F).toFloat()
-            viewData.targetWidth =
-                DisplayUtils.getScreenWidthPixels(activity) - Utils.dp2px(context, 20F)
-            viewData.targetHeight = Utils.dp2px(context, 200F)
-            val viewDataList = listOf(viewData)
-            binding.imageViewer.overlayStatusBar(true) // ImageViewer 是否会占据 StatusBar 的空间
-                .viewData(viewDataList) // 图片数据
-                .imageLoader(PhotoLoader()) // 设置图片加载方式
-                .showIndex(true) // 是否显示图片索引，默认为true
-                .watch(0) // 开启浏览
-
-        }
+//        // 点击照片名称
+//        binding.tvPhotoName.setOnClickListener {
+//            val viewData = ViewData()
+//            viewData.imageSrc = obtainMessageViewModel.getMessageLiveData().value!!.imageUrl
+//            viewData.targetX = Utils.dp2px(context, 10F).toFloat()
+//            viewData.targetWidth =
+//                DisplayUtils.getScreenWidthPixels(activity) - Utils.dp2px(context, 20F)
+//            viewData.targetHeight = Utils.dp2px(context, 200F)
+//            val viewDataList = listOf(viewData)
+//            binding.imageViewer.overlayStatusBar(true) // ImageViewer 是否会占据 StatusBar 的空间
+//                .viewData(viewDataList) // 图片数据
+//                .imageLoader(PhotoLoader()) // 设置图片加载方式
+//                .showIndex(true) // 是否显示图片索引，默认为true
+//                .watch(0) // 开启浏览
+//
+//        }
         binding.edtSendFrom.setText(obtainMessageViewModel.username)
     }
 
