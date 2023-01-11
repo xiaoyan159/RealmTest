@@ -66,7 +66,7 @@ class ObtainMessageFragment : Fragment() {
     private var _binding: FragmentObtainMessageBinding? = null
     private val obtainMessageViewModel by viewModels<ObtainMessageViewModel>()
     private val photoHelper by lazy {
-        EasyMediaFile().setCrop(true)
+        EasyMediaFile().setCrop(false)
     }
     private val recorderLifecycleObserver by lazy {
         RecorderLifecycleObserver()
@@ -265,7 +265,7 @@ class ObtainMessageFragment : Fragment() {
                             return
                         }
                         // 开始启动拍照界面
-                        photoHelper.setCrop(true).takePhoto(requireActivity())
+                        photoHelper.setCrop(false).takePhoto(requireActivity())
                     }
 
                     override fun onDenied(permissions: MutableList<String>, never: Boolean) {
@@ -283,7 +283,7 @@ class ObtainMessageFragment : Fragment() {
         }
 
         binding.btnStartPhoto.setOnClickListener {
-            photoHelper.setCrop(true).selectPhoto(requireActivity())
+            photoHelper.setCrop(false).selectPhoto(requireActivity())
         }
 
         // 用户选择录音文件
