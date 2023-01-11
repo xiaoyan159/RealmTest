@@ -32,6 +32,7 @@ import com.github.file_picker.extension.showFilePicker
 import com.github.file_picker.listener.OnItemClickListener
 import com.github.file_picker.listener.OnSubmitClickListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.internal.ToolbarUtils
 import com.gredicer.datetimepicker.DateTimePickerFragment
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.Permission
@@ -183,24 +184,32 @@ class ObtainMessageFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        if (obtainMessageViewModel.getMessageLiveData().value != null && Constant.message_status_send_over.equals(
-                (obtainMessageViewModel.getMessageLiveData().value as GreetingMessage).status
-            )
+        if (obtainMessageViewModel.getMessageLiveData().value != null
         ) {
-            binding.tvMessageTitle.isEnabled = false
-            binding.btnStartPhoto.isEnabled = false
-            binding.btnStartCamera.isEnabled = false
-            binding.btnStartRecord.isEnabled = false
-            binding.btnSelectSound.isEnabled = false
-            binding.edtSendFrom.isEnabled = false
-            binding.edtSendTo.isEnabled = false
-            binding.btnSendTime.isEnabled = false
-            binding.btnObtainMessageConfirm.isEnabled = false
-            binding.tvPhotoName.isEnabled = false
-            binding.tvAudioName.isEnabled = false
-            binding.imgPhotoDelete.isEnabled = false
-            binding.imgAudioDelete.isEnabled = false
+            if (!"".equals((obtainMessageViewModel.getMessageLiveData().value as GreetingMessage).status)
+                &&
+                !Constant.message_status_late.equals(
+                    (obtainMessageViewModel.getMessageLiveData().value as GreetingMessage).status)
+            ) {
+                binding.tvMessageTitle.isEnabled = false
+                binding.btnStartPhoto.isEnabled = false
+                binding.btnStartCamera.isEnabled = false
+                binding.btnStartRecord.isEnabled = false
+                binding.btnSelectSound.isEnabled = false
+                binding.edtSendFrom.isEnabled = false
+                binding.edtSendTo.isEnabled = false
+                binding.btnSendTime.isEnabled = false
+                binding.btnObtainMessageConfirm.isEnabled = false
+                binding.tvPhotoName.isEnabled = false
+                binding.tvAudioName.isEnabled = false
+                binding.imgPhotoDelete.isEnabled = false
+                binding.imgAudioDelete.isEnabled = false
+                binding.btnObtainMessageConfirm.text = "确认提交"
+            } else {
+                binding.btnObtainMessageConfirm.text = "修改保存"
+            }
         }
+
     }
 
     fun initView() {
@@ -342,8 +351,11 @@ class ObtainMessageFragment : Fragment() {
                 onItemClickListener = object : OnItemClickListener {
                     override fun onClick(media: Media, position: Int, adapter: FilePickerAdapter) {
                         if (!media.file.isDirectory) {
-                            if (!media.file.name.endsWith(".m4a")) {
-                                ToastUtils.showToast("只能选择.m4a文件")
+                            if (!media.file.name.lowercase().endsWith(".m4a")
+                                &&!media.file.name.lowercase().endsWith(".aac")
+                                &&!media.file.name.lowercase().endsWith(".mp3")
+                                &&!media.file.name.lowercase().endsWith(".ogg")) {
+                                ToastUtils.showToast("只能选择m4a/aac/mp3/ogg文件")
                                 return
                             }
                             if (media.file.length() > 2 * 1000 * 1000) {
@@ -386,11 +398,15 @@ class ObtainMessageFragment : Fragment() {
                                 // 申请权限
                                 recorderLifecycleObserver.initAndStartRecorder()
                                 startRecordTime = System.currentTimeMillis()
+                                binding.btnStartRecord.text = "正在录音"
+
+                                Toast.makeText(requireContext(), "正在录音", Toast.LENGTH_SHORT).show()
                                 false
                             }
                             MotionEvent.ACTION_UP -> {
+                                binding.btnStartRecord.text = "长按录音"
                                 if (System.currentTimeMillis() - startRecordTime < 2000) {
-                                    ToastUtils.showToast("录音时间太短！")
+                                    Toast.makeText(requireContext(), "录音时间太短", Toast.LENGTH_SHORT).show()
                                     recorderLifecycleObserver.stopAndReleaseRecorder()
                                     return
                                 }

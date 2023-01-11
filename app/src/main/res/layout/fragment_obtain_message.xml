@@ -193,7 +193,7 @@
                             android:layout_height="wrap_content"
                             android:padding="@dimen/default_widget_padding"
                             android:text="长按录音"
-                            app:icon="@drawable/ic_baseline_fiber_manual_record_24"></com.google.android.material.button.MaterialButton>
+                            app:icon="@drawable/selector_recorder_src"></com.google.android.material.button.MaterialButton>
 
                         <Space
                             android:layout_width="@dimen/default_widget_padding"
@@ -403,7 +403,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="修改保存"></com.google.android.material.button.MaterialButton>
+            android:text="确认提交"></com.google.android.material.button.MaterialButton>
     </LinearLayout>
 
     <indi.liyi.viewer.ImageViewer
