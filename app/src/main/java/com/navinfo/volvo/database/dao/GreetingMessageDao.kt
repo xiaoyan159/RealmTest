@@ -5,6 +5,7 @@ import androidx.paging.PagingSource
 import androidx.room.*
 import com.navinfo.volvo.Constant
 import com.navinfo.volvo.database.entity.GreetingMessage
+import com.navinfo.volvo.database.entity.GreetingMessageKtx
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -34,8 +35,8 @@ interface GreetingMessageDao {
     /**
      * 检查某条数据是否存在
      */
-    @Query("SELECT uuid From GreetingMessage WHERE id = :id LIMIT 1")
-    suspend fun getMessageId(id: Long): Long?
+    @Query("SELECT uuid,id,status From GreetingMessage WHERE id = :id LIMIT 1")
+    suspend fun getMessageId(id: Long): GreetingMessageKtx?
 
     /**
      *
@@ -43,16 +44,17 @@ interface GreetingMessageDao {
     @Transaction
     suspend fun insertOrUpdate(list: List<GreetingMessage>) {
         for (message in list) {
-            Log.e("jingo", "insertOrUpdate ${message.id}")
-            val uuid = getMessageId(message.id)
-            Log.e("jingo", "insertOrUpdate $uuid")
-            if (uuid == null || uuid == 0L) {
-                Log.e("jingo", "insertOrUpdate start ")
-                val l = insert(message)
-                Log.e("jingo", "insertOrUpdate $l ")
+            val locMessage = getMessageId(message.id)
+            if (message.version == Constant.message_version_right_off && message.status == Constant.message_status_late)
+                message.status = Constant.message_status_send_over
+            if (locMessage == null) {
+                Log.e("jingo", "插入数据 id=${message.id} ")
+                insert(message)
             } else {
-                message.uuid = uuid
-                update(message)
+                if (locMessage.status != message.status) {
+                    message.uuid = locMessage.uuid
+                    update(message)
+                }
             }
             Log.e("jingo", "insertOrUpdate end")
         }

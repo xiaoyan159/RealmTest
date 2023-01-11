@@ -12,15 +12,12 @@ import javax.inject.Inject
 class DatabaseRepositoryImp @Inject constructor(
     private val messageDao: GreetingMessageDao,
 ) : DatabaseRepository {
-    companion object {
-        const val PAGE_SIZE = 20
-    }
 
     /**
      * 分页加载消息
      */
     override fun getMessageByPaging(): Flow<PagingData<GreetingMessage>> {
-        return Pager(PagingConfig(PAGE_SIZE)) {
+        return Pager(PagingConfig(10,2,false,10)) {
             messageDao.findAllByDataSource()
         }.flow
     }

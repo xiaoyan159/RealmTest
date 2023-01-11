@@ -21,16 +21,20 @@
         android:id="@+id/navigation_home"
         android:name="com.navinfo.volvo.ui.fragments.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home"></fragment>
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_home_to_obtainMessage"
+            app:destination="@id/navigation_obtain_message"
+            />
+        <argument
+            android:name="message"
+            app:nullable="true"
+            app:argType="com.navinfo.volvo.database.entity.GreetingMessage"
+            />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.navinfo.volvo.ui.fragments.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
-
-    <fragment
-        android:id="@+id/fab_new_message"
         android:name="com.navinfo.volvo.ui.fragments.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
@@ -46,15 +50,6 @@
         android:name="com.navinfo.volvo.ui.fragments.message.ObtainMessageFragment"
         android:label="问候编辑"
         tools:layout="@layout/fragment_obtain_message" >
-        <action
-            android:id="@+id/action_login_to_home"
-            app:destination="@id/navigation_home"
-            app:enterAnim="@anim/from_left"
-            app:exitAnim="@anim/to_right"
-            app:popEnterAnim="@anim/from_right"
-            app:popExitAnim="@anim/to_left"
-            app:popUpTo="@id/navigation_obtain_message"
-            app:popUpToInclusive="true" />
     </fragment>
 
 </navigation>

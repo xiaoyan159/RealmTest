@@ -53,7 +53,7 @@ class NetworkUtilModule {
     fun provideRetrofit(
         client: Lazy<OkHttpClient>,
         converterFactory: GsonConverterFactory,
-        context: Context
+//        context: Context
     ): Retrofit {
         val retrofitBuilder = Retrofit.Builder()
             .baseUrl(Constant.SERVER_ADDRESS)

@@ -5,6 +5,7 @@
     <string name="title_notifications">Notifications</string>
     <string name="delete">Del</string>
     <string name="share">Share</string>
+    <string name="preview">Preview</string>
     <string name="my">My</string>
     <string name="title_activity_second">SecondActivity</string>
     <!-- Strings used for fragments for navigation -->

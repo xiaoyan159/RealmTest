@@ -47,8 +47,8 @@ class CameraFragment : Fragment() {
     ): View {
 //        lifecycle.addObserver(cameraLifeCycleObserver)
 
-        val cameraViewModel =
-            ViewModelProvider(this).get(CameraViewModel::class.java)
+//        val cameraViewModel =
+//            ViewModelProvider(this).get(CameraViewModel::class.java)
 
         _binding = FragmentCameraBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -80,10 +80,11 @@ class CameraFragment : Fragment() {
                                     XLog.d("压缩图片成功:${file?.absolutePath}")
                                     // 删除源文件
                                     if (!resultFile!!.absolutePath.equals(file!!.absolutePath)) {
-                                        resultFile!!.delete()
+                                        resultFile.delete()
                                     }
                                     // 跳转回原Fragment，展示拍摄的照片
-                                    ViewModelProvider(requireActivity()).get(ObtainMessageViewModel::class.java).updateMessagePic(file!!.absolutePath)
+                                    ViewModelProvider(requireActivity())[ObtainMessageViewModel::class.java].updateMessagePic(
+                                        file.absolutePath)
                                     // 跳转回原界面
                                     Navigation.findNavController(root).popBackStack()
                                 }

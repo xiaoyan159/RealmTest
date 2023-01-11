@@ -6,7 +6,9 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -100,17 +102,19 @@ class MainActivity : BaseActivity() {
         navView.setupWithNavController(navController)
 
         lifecycleScope.launch {
-            viewModel.getUnreadCount().collect {
-                if (it == 0L) {
-                    navView.removeBadge(R.id.navigation_home)
-                } else {
-                    var badge = navView.getOrCreateBadge(R.id.navigation_home);
-                    badge.number = it.toInt()
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.getUnreadCount().collect {
+                    if (it == 0L) {
+                        navView.removeBadge(R.id.navigation_home)
+                    } else {
+                        var badge = navView.getOrCreateBadge(R.id.navigation_home);
+                        badge.number = it.toInt()
+                    }
                 }
             }
         }
 
-        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+        navController.addOnDestinationChangedListener { _, destination, _ ->
             if (destination.id == R.id.navigation_home || destination.id == R.id.navigation_dashboard || destination.id == R.id.navigation_notifications) {
                 runOnUiThread {
                     val transition: Transition = Slide(Gravity.BOTTOM)
@@ -144,15 +148,18 @@ class MainActivity : BaseActivity() {
     fun createRootFolder() {
         // 在SD卡创建项目目录
         val sdCardPath = getExternalFilesDir(null)
-//        SystemConstant.ROOT_PATH = "${sdCardPath}/${SystemConstant.FolderName}"
-        SystemConstant.ROOT_PATH = sdCardPath!!.absolutePath
-        SystemConstant.LogFolder = "${sdCardPath!!.absolutePath}/log"
-        FileUtils.createOrExistsDir(SystemConstant.LogFolder)
-        SystemConstant.CameraFolder = "${sdCardPath!!.absolutePath}/camera"
-        FileUtils.createOrExistsDir(SystemConstant.CameraFolder)
-        SystemConstant.SoundFolder = "${sdCardPath!!.absolutePath}/sound"
-        FileUtils.createOrExistsDir(SystemConstant.SoundFolder)
-        xLogInit(SystemConstant.LogFolder)
+        sdCardPath?.let {
+            //        SystemConstant.ROOT_PATH = "${sdCardPath}/${SystemConstant.FolderName}"
+            SystemConstant.ROOT_PATH = sdCardPath.absolutePath
+            SystemConstant.LogFolder = "${sdCardPath.absolutePath}/log"
+            FileUtils.createOrExistsDir(SystemConstant.LogFolder)
+            SystemConstant.CameraFolder = "${sdCardPath.absolutePath}/camera"
+            FileUtils.createOrExistsDir(SystemConstant.CameraFolder)
+            SystemConstant.SoundFolder = "${sdCardPath.absolutePath}/sound"
+            FileUtils.createOrExistsDir(SystemConstant.SoundFolder)
+            xLogInit(SystemConstant.LogFolder)
+        }
+
     }
 
     fun xLogInit(logFolder: String) {

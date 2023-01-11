@@ -1,6 +1,7 @@
 package com.navinfo.volvo.repository.preferences
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -8,11 +9,11 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.viewModelScope
+import com.navinfo.volvo.di.scope.IoDispatcher
+import com.navinfo.volvo.di.scope.MainDispatcher
 import com.navinfo.volvo.model.proto.LoginUser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 
@@ -21,14 +22,8 @@ val Context.datastore: DataStore<Preferences> by preferencesDataStore(name = Dat
 
 class PreferencesRepositoryImp @Inject constructor(
     private val context: Context,
-    private val loginUser: DataStore<LoginUser>
+    private val loginUser: DataStore<LoginUser>,
 ) : PreferencesRepository {
-
-    companion object {
-        val NAME = stringPreferencesKey("NAME")
-        val PHONE_NUMBER = stringPreferencesKey("PHONE")
-        val address = stringPreferencesKey("ADDRESS")
-    }
 
     override suspend fun saveLoginUser(id: String, name: String, password: String) {
         loginUser.updateData { preference ->
@@ -57,5 +52,15 @@ class PreferencesRepositoryImp @Inject constructor(
     }
 
     override fun loginUser(): Flow<LoginUser?> = loginUser.data
+
+    override fun getUserName(): String {
+        Log.e("jingo", "获取用户名 开始")
+        var username = ""
+        loginUser.data.map {
+            username = it.username
+        }
+        Log.e("jingo", "获取用户名 结束后 $username")
+        return username
+    }
 
 }

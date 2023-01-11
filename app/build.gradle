@@ -6,6 +6,7 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin' //hilt 依赖注入
     id "com.google.protobuf" version "0.8.17" //Proto DataStore 插件
+    id 'androidx.navigation.safeargs.kotlin'//Safe Args传递数据
 //    id 'com.google.dagger.hilt.android'
 }
 
@@ -59,6 +60,7 @@ android {
 }
 
 dependencies {
+    def nav_version = "2.5.3"
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.7.0'
@@ -70,12 +72,12 @@ dependencies {
     //生命周期
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
     implementation "androidx.lifecycle:lifecycle-common-java8:2.4.1"
 
-    //导航
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
+    //导航  // Kotlin
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
@@ -113,7 +115,6 @@ dependencies {
 
     // Retrofit 网络请求相关
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
