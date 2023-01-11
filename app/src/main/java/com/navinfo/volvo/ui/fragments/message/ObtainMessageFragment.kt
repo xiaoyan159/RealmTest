@@ -51,6 +51,7 @@ import com.nhaarman.supertooltips.ToolTip
 import dagger.hilt.android.AndroidEntryPoint
 import indi.liyi.viewer.Utils
 import indi.liyi.viewer.ViewData
+import me.jagar.chatvoiceplayerlibrary.VoicePlayerView
 import top.zibin.luban.Luban
 import top.zibin.luban.OnCompressListener
 import java.io.File
@@ -78,6 +79,8 @@ class ObtainMessageFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    private lateinit var voiceView: VoicePlayerView
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -86,6 +89,10 @@ class ObtainMessageFragment : Fragment() {
         _binding = FragmentObtainMessageBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        voiceView =
+            LayoutInflater.from(requireActivity()).inflate(R.layout.widget_voice_player, null)
+                .findViewById(R.id.voicePlayerView)
+        _binding!!.llAudioPlay.addView(voiceView)
         var messege = arguments?.getParcelable<GreetingMessage>("message")
         if (messege == null) {
             messege = GreetingMessage(who = obtainMessageViewModel.username)
@@ -493,12 +500,12 @@ class ObtainMessageFragment : Fragment() {
                     }
 
                     override fun success(file: File) {
-                        binding.voicePlayerView.setAudio(localFile.absolutePath)
+                        voiceView.setAudio(localFile.absolutePath)
                     }
 
                 })
             } else {
-                binding.voicePlayerView.setAudio(localFile.absolutePath)
+                voiceView.setAudio(localFile.absolutePath)
             }
         }
 

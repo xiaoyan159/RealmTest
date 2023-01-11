@@ -232,24 +232,7 @@
                     android:layout_gravity="center"
                     android:visibility="gone"
                     android:orientation="horizontal">
-                    <me.jagar.chatvoiceplayerlibrary.VoicePlayerView
-                        android:id="@+id/voicePlayerView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:enableVisualizer="true"
-                        app:visualizationPlayedColor="@color/teal_200"
-                        app:visualizationNotPlayedColor="@color/teal_700"
-                        app:playPauseBackgroundColor="@color/teal_700"
-                        app:timingBackgroundColor="@color/purple_200"
-                        app:seekBarProgressColor="@color/purple_500"
-                        app:showShareButton="false"
-                        app:shareCornerRadius="100"
-                        app:playPauseCornerRadius="100"
-                        app:showTiming="true"
-                        app:viewCornerRadius="100"
-                        app:viewBackground="@android:color/transparent"
-                        app:progressTimeColor="@color/purple_500"
-                        app:seekBarThumbColor="@color/teal_200"/>
+
                 </LinearLayout>
 
                 <com.nhaarman.supertooltips.ToolTipRelativeLayout

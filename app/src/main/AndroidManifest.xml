@@ -31,17 +31,6 @@
         android:theme="@style/Theme.NavinfoVolvo"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.message.MessageActivity"
-            android:configChanges="orientation"
-            android:exported="false"
-            android:label="@string/title_activity_second"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.NavinfoVolvo.NoActionBar">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
             android:name="com.navinfo.volvo.ui.MainActivity"
             android:exported="true"
             android:label="@string/app_name">

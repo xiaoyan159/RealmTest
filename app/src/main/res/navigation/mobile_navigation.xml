@@ -24,13 +24,11 @@
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_home_to_obtainMessage"
-            app:destination="@id/navigation_obtain_message"
-            />
+            app:destination="@id/navigation_obtain_message" />
         <argument
             android:name="message"
-            app:nullable="true"
             app:argType="com.navinfo.volvo.database.entity.GreetingMessage"
-            />
+            app:nullable="true" />
     </fragment>
 
     <fragment
@@ -49,7 +47,6 @@
         android:id="@+id/navigation_obtain_message"
         android:name="com.navinfo.volvo.ui.fragments.message.ObtainMessageFragment"
         android:label="问候编辑"
-        tools:layout="@layout/fragment_obtain_message" >
-    </fragment>
+        tools:layout="@layout/fragment_obtain_message"></fragment>
 
 </navigation>
