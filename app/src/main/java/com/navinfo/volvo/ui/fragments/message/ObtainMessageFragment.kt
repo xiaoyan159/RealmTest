@@ -36,6 +36,7 @@ import com.gredicer.datetimepicker.DateTimePickerFragment
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
+import com.navinfo.volvo.Constant
 import com.navinfo.volvo.R
 import com.navinfo.volvo.RecorderLifecycleObserver
 import com.navinfo.volvo.database.entity.Attachment
@@ -175,7 +176,7 @@ class ObtainMessageFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        if (obtainMessageViewModel.getMessageLiveData().value!=null&&"已发送".equals((obtainMessageViewModel.getMessageLiveData().value as GreetingMessage).status)) {
+        if (obtainMessageViewModel.getMessageLiveData().value!=null&&Constant.message_status_send_over.equals((obtainMessageViewModel.getMessageLiveData().value as GreetingMessage).status)) {
             binding.tvMessageTitle.isEnabled=false
             binding.btnStartPhoto.isEnabled=false
             binding.btnStartCamera.isEnabled=false
