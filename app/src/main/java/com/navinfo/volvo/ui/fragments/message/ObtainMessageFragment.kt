@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
@@ -35,6 +36,7 @@ import com.gredicer.datetimepicker.DateTimePickerFragment
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
+import com.navinfo.volvo.Constant
 import com.navinfo.volvo.R
 import com.navinfo.volvo.RecorderLifecycleObserver
 import com.navinfo.volvo.database.entity.Attachment
@@ -65,7 +67,7 @@ class ObtainMessageFragment : Fragment() {
     private var _binding: FragmentObtainMessageBinding? = null
     private val obtainMessageViewModel by viewModels<ObtainMessageViewModel>()
     private val photoHelper by lazy {
-        EasyMediaFile().setCrop(true)
+        EasyMediaFile().setCrop(false)
     }
     private val recorderLifecycleObserver by lazy {
         RecorderLifecycleObserver()
@@ -179,6 +181,25 @@ class ObtainMessageFragment : Fragment() {
         return root
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (obtainMessageViewModel.getMessageLiveData().value!=null&&Constant.message_status_send_over.equals((obtainMessageViewModel.getMessageLiveData().value as GreetingMessage).status)) {
+            binding.tvMessageTitle.isEnabled=false
+            binding.btnStartPhoto.isEnabled=false
+            binding.btnStartCamera.isEnabled=false
+            binding.btnStartRecord.isEnabled=false
+            binding.btnSelectSound.isEnabled=false
+            binding.edtSendFrom.isEnabled=false
+            binding.edtSendTo.isEnabled=false
+            binding.btnSendTime.isEnabled=false
+            binding.btnObtainMessageConfirm.isEnabled=false
+            binding.tvPhotoName.isEnabled = false
+            binding.tvAudioName.isEnabled = false
+            binding.imgPhotoDelete.isEnabled = false
+            binding.imgAudioDelete.isEnabled = false
+        }
+    }
+
     fun initView() {
         // 设置问候信息提示的红色星号
         binding.tiLayoutTitle.markRequiredInRed()
@@ -236,7 +257,6 @@ class ObtainMessageFragment : Fragment() {
                         )
                     }
                 }
-
             }
             dialog.show(parentFragmentManager, "SelectSendTime")
         }
@@ -256,7 +276,7 @@ class ObtainMessageFragment : Fragment() {
                             return
                         }
                         // 开始启动拍照界面
-                        photoHelper.setCrop(true).takePhoto(requireActivity())
+                        photoHelper.setCrop(false).takePhoto(requireActivity())
                     }
 
                     override fun onDenied(permissions: MutableList<String>, never: Boolean) {
@@ -274,7 +294,7 @@ class ObtainMessageFragment : Fragment() {
         }
 
         binding.btnStartPhoto.setOnClickListener {
-            photoHelper.setCrop(true).selectPhoto(requireActivity())
+            photoHelper.setCrop(false).selectPhoto(requireActivity())
         }
 
         // 用户选择录音文件
