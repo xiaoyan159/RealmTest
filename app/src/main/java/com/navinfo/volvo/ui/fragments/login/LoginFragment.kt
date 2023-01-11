@@ -63,13 +63,15 @@ class LoginFragment : BaseFragment() {
                 Toast.makeText(context, "请输入密码", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            viewModel.onClickLogin(
-                viewBinding.loginUsername.text.toString(),
-                viewBinding.loginPassword.text.toString()
-            )
-            findNavController().navigate(R.id.action_login_to_home)
+            lifecycleScope.launch{
+                repeatOnLifecycle(Lifecycle.State.STARTED){
+                    viewModel.onClickLogin(
+                        viewBinding.loginUsername.text.toString(),
+                        viewBinding.loginPassword.text.toString()
+                    )
+                    findNavController().navigate(R.id.action_login_to_home)
+                }
+            }
         }
     }
-
-
 }

@@ -15,5 +15,4 @@ interface PreferencesRepository {
     suspend fun getString(key: String): Flow<String?>
     suspend fun saveInt(key: String, content: Int)
     suspend fun getInt(key: String): Flow<Int?>
-    fun getUserName(): String
 }
