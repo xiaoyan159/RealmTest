@@ -187,8 +187,7 @@ class ObtainMessageFragment : Fragment() {
         if (obtainMessageViewModel.getMessageLiveData().value != null
         ) {
             if (!"".equals((obtainMessageViewModel.getMessageLiveData().value as GreetingMessage).status)
-                &&
-                !Constant.message_status_late.equals(
+                &&!Constant.message_status_late.equals(
                     (obtainMessageViewModel.getMessageLiveData().value as GreetingMessage).status)
             ) {
                 binding.tvMessageTitle.isEnabled = false
@@ -204,9 +203,12 @@ class ObtainMessageFragment : Fragment() {
                 binding.tvAudioName.isEnabled = false
                 binding.imgPhotoDelete.isEnabled = false
                 binding.imgAudioDelete.isEnabled = false
-                binding.btnObtainMessageConfirm.text = "确认提交"
+            }
+
+            if (!"".equals((obtainMessageViewModel.getMessageLiveData().value as GreetingMessage).status)) {
+                binding.btnObtainMessageConfirm.text = "保存修改"
             } else {
-                binding.btnObtainMessageConfirm.text = "修改保存"
+                binding.btnObtainMessageConfirm.text = "确认提交"
             }
         }
 

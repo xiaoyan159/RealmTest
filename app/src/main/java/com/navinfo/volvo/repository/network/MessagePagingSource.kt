@@ -36,11 +36,11 @@ class MessagePagingSource(
                         data?.let { d ->
                             if (d.rows != null) {
                                 list = d.rows
-                                for (item in list){
-                                    if(item.version == Constant.message_version_right_off && item.status == Constant.message_status_late){
-                                        item.status = Constant.message_status_send_over
-                                    }
-                                }
+//                                for (item in list){
+//                                    if(item.version == Constant.message_version_right_off && item.status == Constant.message_status_late){
+//                                        item.status = Constant.message_status_send_over
+//                                    }
+//                                }
                             }
                         }
                     } else {
