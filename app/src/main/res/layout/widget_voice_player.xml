@@ -19,4 +19,5 @@
     app:viewBackground="@android:color/transparent"
     app:viewCornerRadius="100"
     app:visualizationNotPlayedColor="@color/teal_700"
-    app:visualizationPlayedColor="@color/teal_200" />
+    app:visualizationPlayedColor="@color/teal_200"
+    tools:ignore="MissingDefaultResource" />
