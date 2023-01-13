@@ -462,9 +462,9 @@ class ObtainMessageFragment : Fragment() {
                             override fun onSuccess(file: File?) {
                                 XLog.d("压缩图片成功:${file?.absolutePath}")
                                 // 删除源文件
-                                if (!it.absolutePath.equals(file?.absolutePath)) {
-                                    it?.delete()
-                                }
+//                                if (!it.absolutePath.equals(file?.absolutePath)) {
+//                                    it?.delete()
+//                                }
                                 // 如果当前文件不在camera缓存文件夹下，则移动该文件
                                 if (!file!!.parentFile.absolutePath.equals(SystemConstant.CameraFolder)) {
                                     try {
