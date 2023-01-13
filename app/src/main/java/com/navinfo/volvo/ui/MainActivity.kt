@@ -96,6 +96,7 @@ class MainActivity : BaseActivity() {
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications,
+                R.id.navigation_setting,
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -115,10 +116,18 @@ class MainActivity : BaseActivity() {
         }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (supportActionBar != null) {
+                if (destination.id == R.id.navigation_login) {
+                    supportActionBar!!.hide()
+                } else if (!supportActionBar!!.isShowing) {
+                    supportActionBar!!.show()
+                }
+            }
+
             if (destination.id == R.id.navigation_home || destination.id == R.id.navigation_dashboard || destination.id == R.id.navigation_notifications) {
                 runOnUiThread {
                     val transition: Transition = Slide(Gravity.BOTTOM)
-                    transition.duration = 300;
+                    transition.duration = 500;
                     TransitionManager.beginDelayedTransition(binding.root, transition);
                     navView.visibility = View.VISIBLE
                     newMessageView.visibility = View.VISIBLE
@@ -126,7 +135,7 @@ class MainActivity : BaseActivity() {
             } else {
                 runOnUiThread {
                     val transition: Transition = Slide(Gravity.BOTTOM)
-                    transition.duration = 300;
+                    transition.duration = 500;
                     TransitionManager.beginDelayedTransition(binding.root, transition);
                     navView.visibility = View.GONE
                     newMessageView.visibility = View.GONE

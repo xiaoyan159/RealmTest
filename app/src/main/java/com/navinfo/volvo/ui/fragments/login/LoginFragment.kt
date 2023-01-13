@@ -23,10 +23,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class LoginFragment : BaseFragment() {
 
-    //    private var loginViewModel:LoginViewModel by viewModel(get())
     private lateinit var viewBinding: FragmentLoginBinding
-
-
     private val viewModel by viewModels<LoginViewModel>()
 
     override fun onCreateView(
@@ -34,6 +31,7 @@ class LoginFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         viewBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
         viewBinding.lifecycleOwner = this
         initView()
