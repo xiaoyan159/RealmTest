@@ -39,6 +39,9 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- 为Activity设置<nav-graph/>标签 -->
+            <nav-graph android:value="@navigation/mobile_navigation" />
+
         </activity>
 
         <meta-data

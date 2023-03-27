@@ -42,13 +42,15 @@ class HomeFragment : BaseFragment(), OnItemClickListener, OnItemMenuClickListene
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
-//        _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = _binding.root
         _binding.lifecycleOwner = this
-
         headView = HomeAdapterNotingBinding.inflate(inflater, container, false)
-        initView()
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initView()
     }
 
     private fun initView() {

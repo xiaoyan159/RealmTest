@@ -2,20 +2,16 @@ package com.navinfo.volvo.ui
 
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.Gravity
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.transition.Slide
-import androidx.transition.Transition
-import androidx.transition.TransitionManager
 import com.easytools.tools.FileUtils
 import com.elvishew.xlog.BuildConfig
 import com.elvishew.xlog.LogConfiguration
@@ -45,14 +41,12 @@ class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel by viewModels<MainActivityViewModel>()
-
-
+    private var curId: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        initView()
         XXPermissions.with(this)
             // 申请单个权限
             .permission(Permission.WRITE_EXTERNAL_STORAGE)
@@ -83,24 +77,32 @@ class MainActivity : BaseActivity() {
                     } else {
                         onSDCardDenied()
                         showRationaleForSDCard(permissions)
+                        setupNavigation()
                     }
                 }
             })
 
     }
 
+    private fun initView() {
+//        supportActionBar.setDefaultDisplayHomeAsUpEnabled()
+    }
+
+    /**
+     * 设置底部导航栏
+     */
     private fun setupNavigation() {
         val navView: BottomNavigationView = binding.navView
         val newMessageView = binding.newMessageFab
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications,
-            )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
+//        val appBarConfiguration = AppBarConfiguration(
+//            setOf(
+//                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications,
+//                R.id.navigation_setting,
+//            )
+//        )
+//        setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.getUnreadCount().collect {
@@ -113,36 +115,88 @@ class MainActivity : BaseActivity() {
                 }
             }
         }
+        navView.setOnItemSelectedListener {
+            if (it.itemId != curId) {
+                val options = NavOptions.Builder().setPopUpTo(
+                    curId,
+                    inclusive = true,
+                    saveState = true
+                ).build()
+                navController.navigate(it.itemId, null, options)
+//                when (it.itemId) {
+//                    R.id.navigation_home -> {
+//
+//                    }
+//                    R.id.navigation_dashboard -> {
+//                        navController.navigate(it.itemId)
+//                    }
+//                    R.id.navigation_setting -> {
+//                        navController.navigate(it.itemId)
+//                    }
+//                    R.id.navigation_notifications -> {
+//                        navController.navigate(it.itemId)
+//                    }
+//                }
+            }
+            true
+        }
+
+        navView.setOnItemReselectedListener {
+            when (it.itemId) {
+                R.id.navigation_home -> Log.e("jingo", "我是 Reselected navigation_home")
+                R.id.navigation_dashboard -> Log.e("jingo", "我是 Reselected navigation_dashboard")
+                R.id.navigation_setting -> Log.e("jingo", "我是 Reselected navigation_setting")
+                R.id.navigation_notifications -> Log.e(
+                    "jingo",
+                    "我是 Reselected navigation_notifications"
+                )
+            }
+            true
+        }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.navigation_home || destination.id == R.id.navigation_dashboard || destination.id == R.id.navigation_notifications) {
-                runOnUiThread {
-                    val transition: Transition = Slide(Gravity.BOTTOM)
-                    transition.duration = 300;
-                    TransitionManager.beginDelayedTransition(binding.root, transition);
+//            if (supportActionBar != null) {
+//                if (destination.id == R.id.navigation_login || destination.id == R.id.navigation_splash) {
+//                    supportActionBar!!.hide()
+//                } else if (!supportActionBar!!.isShowing) {
+//                    supportActionBar!!.show()
+//                }
+//            }
+            curId = destination.id
+            if (destination.id == R.id.navigation_home
+                || destination.id == R.id.navigation_dashboard
+                || destination.id == R.id.navigation_notifications
+                || destination.id == R.id.navigation_setting
+            ) {
+                if (navView.visibility != View.VISIBLE) {
+//                    runOnUiThread {
+//                    val transition: Transition = Slide(Gravity.BOTTOM)
+//                    transition.duration = 500;
+//                    TransitionManager.beginDelayedTransition(binding.root, transition);
                     navView.visibility = View.VISIBLE
                     newMessageView.visibility = View.VISIBLE
+//                    }
                 }
             } else {
-                runOnUiThread {
-                    val transition: Transition = Slide(Gravity.BOTTOM)
-                    transition.duration = 300;
-                    TransitionManager.beginDelayedTransition(binding.root, transition);
+                if (navView.visibility != View.GONE) {
+//                    runOnUiThread {
+//                    val transition: Transition = Slide(Gravity.BOTTOM)
+//                    transition.duration = 500;
+//                    TransitionManager.beginDelayedTransition(binding.root, transition);
                     navView.visibility = View.GONE
                     newMessageView.visibility = View.GONE
+//                    }
                 }
             }
         }
         binding.newMessageFab.setOnClickListener {
-//            val intent: Intent = Intent(this@MainActivity, MessageActivity::class.java)
-//            startActivity(intent)
             navController.navigate(R.id.navigation_obtain_message)
         }
     }
 
 
-    override fun onSupportNavigateUp() =
-        findNavController(R.id.nav_host_fragment_activity_main).navigateUp()
+//    override fun onSupportNavigateUp() =
+//        findNavController(R.id.nav_host_fragment_activity_main).navigateUp()
 
     //    @NeedsPermission(Manifest.permission.MANAGE_EXTERNAL_STORAGE)
     fun createRootFolder() {

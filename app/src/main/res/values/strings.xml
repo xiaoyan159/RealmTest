@@ -7,6 +7,7 @@
     <string name="share">Share</string>
     <string name="preview">Preview</string>
     <string name="my">My</string>
+    <string name="setting">setting</string>
     <string name="title_activity_second">SecondActivity</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>

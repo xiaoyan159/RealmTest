@@ -42,18 +42,19 @@ class HomeViewModel @Inject constructor(
     var userName: String = ""
 
     init {
-        Log.e("jingo","当前的homeviewmodel 是 ${hashCode()}")
+        Log.e("jingo", "当前的homeviewmodel 是 ${hashCode()}")
         viewModelScope.launch {
             shard.loginUser().collectLatest {
-                userName = it!!.username
-                Log.e("jingo","用户赋值结束 是 ${userName.hashCode()}")
+                if (it != null) {
+                    userName = it.username
+                }
+                Log.e("jingo", "用户赋值结束 是 ${it.hashCode()}")
             }
         }
-
     }
 
     suspend fun getNetMessageList(): Flow<PagingData<GreetingMessage>> {
-        Log.e("jingo","用户赋值了吗？ $userName ${userName.hashCode()}")
+        Log.e("jingo", "用户赋值了吗？ $userName ${hashCode()}")
         val messagePost = NetworkMessageListPost(who = userName)
         return netRepository.getMessagePaging(context = application, messagePost)
 

@@ -6,6 +6,7 @@
     <string name="delete">删除</string>
     <string name="share">分享</string>
     <string name="my">我的</string>
+    <string name="setting">设置</string>
     <string name="title_activity_second">SecondActivity</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>

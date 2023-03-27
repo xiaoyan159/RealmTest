@@ -37,7 +37,7 @@ class ObtainMessageViewModel @Inject constructor(
         viewModelScope.launch {
             pre.loginUser().collectLatest {
                 username = it!!.username
-                Log.e("jingo", "用户赋值结束 是 ${username.hashCode()}")
+                Log.e("jingo", "用户赋值结束 是 ${it.hashCode()}")
             }
         }
     }

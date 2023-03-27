@@ -8,8 +8,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.navinfo.volvo.databinding.FragmentNotificationsBinding
+import com.navinfo.volvo.ui.fragments.BaseFragment
 
-class NotificationsFragment : Fragment() {
+class NotificationsFragment : BaseFragment() {
 
     private var _binding: FragmentNotificationsBinding? = null
 
