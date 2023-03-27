@@ -46,6 +46,7 @@ import com.navinfo.volvo.database.entity.GreetingMessage
 import com.navinfo.volvo.databinding.FragmentObtainMessageBinding
 import com.navinfo.volvo.http.DownloadCallback
 import com.navinfo.volvo.model.VolvoModel
+import com.navinfo.volvo.ui.fragments.BaseFragment
 import com.navinfo.volvo.ui.markRequiredInRed
 import com.navinfo.volvo.util.PhotoLoader
 import com.navinfo.volvo.utils.EasyMediaFile
@@ -64,7 +65,7 @@ import kotlin.streams.toList
 
 
 @AndroidEntryPoint
-class ObtainMessageFragment : Fragment() {
+class ObtainMessageFragment : BaseFragment() {
     private var _binding: FragmentObtainMessageBinding? = null
     private val obtainMessageViewModel by viewModels<ObtainMessageViewModel>()
     private val photoHelper by lazy {

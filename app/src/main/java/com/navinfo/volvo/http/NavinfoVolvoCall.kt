@@ -6,7 +6,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 class NavinfoVolvoCall {
     companion object {
         private val service by lazy {
-            Retrofit.Builder().baseUrl("http://ec2-52-81-73-5.cn-north-1.compute.amazonaws.com.cn:8088/")
+//            val baseUrl = "http://ec2-52-81-73-5.cn-north-1.compute.amazonaws.com.cn:8088/"
+            val baseUrl = "http://54.223.225.147:8088/"
+
+            Retrofit.Builder().baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(NavinfoVolvoService::class.java)

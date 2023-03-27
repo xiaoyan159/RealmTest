@@ -37,8 +37,10 @@ class PreferencesRepositoryImp @Inject constructor(
         }
     }
 
-    override suspend fun getString(key: String): Flow<String?> = context.datastore.data.map {
-        it[stringPreferencesKey(key)]
+    override suspend fun getString(key: String): Flow<String?> {
+        return context.datastore.data.map {
+            it[stringPreferencesKey(key)]
+        }
     }
 
     override suspend fun saveInt(key: String, content: Int) {
@@ -47,11 +49,14 @@ class PreferencesRepositoryImp @Inject constructor(
         }
     }
 
+
     override suspend fun getInt(key: String): Flow<Int?> = context.datastore.data.map {
         it[intPreferencesKey(key)]
     }
 
     override fun loginUser(): Flow<LoginUser?> {
-        return loginUser.data
+        val f = loginUser.data
+        Log.e("jingo", "获取用户信息总接口 ${f.hashCode()}")
+        return f
     }
 }
