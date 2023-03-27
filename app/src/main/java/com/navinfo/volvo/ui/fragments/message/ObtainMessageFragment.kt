@@ -1,7 +1,10 @@
 package com.navinfo.volvo.ui.fragments.message
 
+import android.app.ProgressDialog
 import android.content.DialogInterface
+import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -10,11 +13,9 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.AdapterView
+import android.widget.*
 import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -83,6 +84,7 @@ class ObtainMessageFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var voiceView: VoicePlayerView
+    private lateinit var loadingDialog: AlertDialog
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -683,7 +685,15 @@ class ObtainMessageFragment : Fragment() {
                 } else {
                     messageData.version = "0" // 预约发送
                 }
-
+                if (loadingDialog == null) {
+                    val progressBar = ProgressBar(context, null, android.R.attr.progressBarStyleLarge)
+                    progressBar.indeterminateDrawable.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
+                    loadingDialog = AlertDialog.Builder(requireContext())
+                        .setView(progressBar)
+                        .setCancelable(false)
+                        .create()
+                }
+                loadingDialog.show()
                 // 开始网络提交数据
                 if (obtainMessageViewModel.getMessageLiveData().value?.id == 0L) { // 如果网络id为空，则调用更新操作
                     obtainMessageViewModel.insertCardByApp(confirmCallback)
@@ -714,6 +724,12 @@ class ObtainMessageFragment : Fragment() {
     val confirmCallback = object : ObtainMessageViewModel.MyConfirmCallback {
         override fun onSucess() {
             findNavController().popBackStack()
+            loadingDialog.hide()
+        }
+
+        override fun onFail(error: String) {
+            loadingDialog.hide()
+            ToastUtils.showToast(error)
         }
     }
 

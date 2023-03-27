@@ -270,11 +270,11 @@ class ObtainMessageViewModel @Inject constructor(
                     // TODO 尝试更新本地数据
                     confirmCallback.onSucess()
                 } else {
-                    ToastUtils.showToast(result.msg)
+                    confirmCallback.onFail(result.msg)
                 }
             } catch (e: Exception) {
-                ToastUtils.showToast(e.message)
                 XLog.d(e.message)
+                confirmCallback.onFail(e.message!!)
             }
         }
     }
@@ -333,5 +333,6 @@ class ObtainMessageViewModel @Inject constructor(
 
     interface MyConfirmCallback {
         fun onSucess()
+        fun onFail(error: String)
     }
 }
