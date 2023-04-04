@@ -31,8 +31,11 @@ import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import com.navinfo.volvo.R
 import com.navinfo.volvo.databinding.ActivityMainBinding
+import com.navinfo.volvo.model.Dog
 import com.navinfo.volvo.utils.SystemConstant
 import dagger.hilt.android.AndroidEntryPoint
+import io.realm.kotlin.Realm
+import io.realm.kotlin.RealmConfiguration
 import kotlinx.coroutines.launch
 
 
@@ -66,6 +69,12 @@ class MainActivity : BaseActivity() {
                     // 在SD卡创建项目目录
                     createRootFolder()
                     setupNavigation()
+                    val config = RealmConfiguration.Builder(schema = setOf(Dog::class))
+                        .directory(SystemConstant.LogFolder)
+                        .name("Test.realm")
+                        .build()
+                    Log.d("mypath:",config.path)
+                    val realm: Realm = Realm.open(config)
                 }
 
                 override fun onDenied(permissions: MutableList<String>, never: Boolean) {

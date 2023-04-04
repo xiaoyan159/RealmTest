@@ -7,6 +7,7 @@ plugins {
     id 'dagger.hilt.android.plugin' //hilt 依赖注入
     id "com.google.protobuf" version "0.8.17" //Proto DataStore 插件
     id 'androidx.navigation.safeargs.kotlin'//Safe Args传递数据
+    id 'io.realm.kotlin'
 //    id 'com.google.dagger.hilt.android'
 }
 
@@ -43,11 +44,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
         freeCompilerArgs += [
                 "-Xjvm-default=all",
         ]
@@ -61,7 +62,7 @@ android {
 
 dependencies {
     def nav_version = "2.5.3"
-    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.7.0'
     implementation "androidx.compose.material3:material3:1.0.0-alpha04"
@@ -121,8 +122,8 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.6")
 
     //hilt
-    implementation "com.google.dagger:hilt-android:2.41"
-    kapt "com.google.dagger:hilt-compiler:2.41"
+    implementation 'com.google.dagger:hilt-android:2.45'
+    kapt 'com.google.dagger:hilt-compiler:2.45'
 
     // 显示错误提示 https://github.com/nhaarman/supertooltips
     implementation 'com.nhaarman.supertooltips:library:3.0.0'
@@ -152,6 +153,9 @@ dependencies {
     // 数据存储 Proto DataStore 对象
     implementation "androidx.datastore:datastore-core:1.0.0"
     implementation  "com.google.protobuf:protobuf-javalite:3.18.0"
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
+    implementation 'io.realm.kotlin:library-base:1.6.1'
 }
 
 //Proto DataStore 数据存储插件
