@@ -5,6 +5,7 @@ import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -85,7 +86,16 @@ class ObtainMessageFragment : BaseFragment() {
     private val binding get() = _binding!!
 
     private lateinit var voiceView: VoicePlayerView
-    private lateinit var loadingDialog: AlertDialog
+    private val loadingDialog by lazy {
+        val progressBar = ProgressBar(context, null, android.R.attr.progressBarStyleLarge)
+        progressBar.indeterminateDrawable.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(progressBar)
+            .setCancelable(false)
+            .create()
+        dialog.window!!.setBackgroundDrawable(ColorDrawable(0))
+        dialog
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -685,14 +695,6 @@ class ObtainMessageFragment : BaseFragment() {
                     messageData.version = "1" // 立即发送
                 } else {
                     messageData.version = "0" // 预约发送
-                }
-                if (loadingDialog == null) {
-                    val progressBar = ProgressBar(context, null, android.R.attr.progressBarStyleLarge)
-                    progressBar.indeterminateDrawable.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
-                    loadingDialog = AlertDialog.Builder(requireContext())
-                        .setView(progressBar)
-                        .setCancelable(false)
-                        .create()
                 }
                 loadingDialog.show()
                 // 开始网络提交数据
